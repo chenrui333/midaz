@@ -50,7 +50,7 @@ func (pc *PostgresConnection) Connect() error {
 		dbresolver.WithReplicaDBs(dbReadOnlyReplica),
 		dbresolver.WithLoadBalancer(dbresolver.RoundRobinLB))
 
-	migrationsPath, err := filepath.Abs(filepath.Join("components", pc.Component, "migrations"))
+	migrationsPath, err := filepath.Abs(filepath.Join("..", "migrations"))
 	if err != nil {
 		log.Fatal("failed get filepath",
 			zap.Error(err))
