@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/LerianStudio/midaz/common/mauth"
-
 	"github.com/coreos/go-oidc"
 	"github.com/gofiber/fiber/v2"
 	"github.com/patrickmn/go-cache"

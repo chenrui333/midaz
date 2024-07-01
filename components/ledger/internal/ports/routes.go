@@ -1,8 +1,6 @@
 package http
 
 import (
-
-	// "github.com/LerianStudio/midaz/common/mauth"
 	"github.com/LerianStudio/midaz/common/mauth"
 	lib "github.com/LerianStudio/midaz/common/net/http"
 	l "github.com/LerianStudio/midaz/components/ledger/internal/domain/onboarding/ledger"
@@ -11,7 +9,7 @@ import (
 	i "github.com/LerianStudio/midaz/components/ledger/internal/domain/portfolio/instrument"
 	p "github.com/LerianStudio/midaz/components/ledger/internal/domain/portfolio/portfolio"
 	r "github.com/LerianStudio/midaz/components/ledger/internal/domain/portfolio/product"
-	"github.com/LerianStudio/midaz/components/ledger/internal/ports"
+	ports "github.com/LerianStudio/midaz/components/ledger/internal/ports/in"
 	"github.com/LerianStudio/midaz/components/ledger/internal/service"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
