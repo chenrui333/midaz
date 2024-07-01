@@ -7,15 +7,16 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/LerianStudio/midaz/components/ledger/internal/adapters/database/mongodb"
-	"github.com/LerianStudio/midaz/components/ledger/internal/adapters/database/postgres"
+	"github.com/LerianStudio/midaz/components/ledger/internal/adapters/in/mongodb"
+	"github.com/LerianStudio/midaz/components/ledger/internal/adapters/in/postgres"
 	"github.com/LerianStudio/midaz/components/ledger/internal/domain/onboarding/ledger"
 	"github.com/LerianStudio/midaz/components/ledger/internal/domain/onboarding/organization"
 	"github.com/LerianStudio/midaz/components/ledger/internal/domain/portfolio/account"
 	"github.com/LerianStudio/midaz/components/ledger/internal/domain/portfolio/instrument"
 	"github.com/LerianStudio/midaz/components/ledger/internal/domain/portfolio/portfolio"
 	"github.com/LerianStudio/midaz/components/ledger/internal/domain/portfolio/product"
-	"github.com/LerianStudio/midaz/components/ledger/internal/ports"
+	http "github.com/LerianStudio/midaz/components/ledger/internal/ports"
+	ports "github.com/LerianStudio/midaz/components/ledger/internal/ports/in"
 
 	"github.com/LerianStudio/midaz/common/mauth"
 	"github.com/LerianStudio/midaz/common/mmongo"
@@ -26,7 +27,6 @@ import (
 	"github.com/LerianStudio/midaz/components/ledger/internal/app/command"
 	"github.com/LerianStudio/midaz/components/ledger/internal/app/query"
 	"github.com/LerianStudio/midaz/components/ledger/internal/domain/metadata"
-	httpHandler "github.com/LerianStudio/midaz/components/ledger/internal/ports/http"
 	"github.com/LerianStudio/midaz/components/ledger/internal/service"
 	"github.com/google/wire"
 )
@@ -68,7 +68,7 @@ var (
 		setupPostgreSQLConnection,
 		setupMongoDBConnection,
 		service.NewConfig,
-		httpHandler.NewRouter,
+		http.NewRouter,
 		mauth.NewAuthClient,
 		service.NewServer,
 		postgres.NewOrganizationPostgreSQLRepository,
