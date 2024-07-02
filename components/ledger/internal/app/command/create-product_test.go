@@ -21,15 +21,15 @@ func TestCreateProductSuccess(t *testing.T) {
 	}
 
 	uc := UseCase{
-		ProductRepo: mock.NewMockRepository(gomock.NewController(t)),
+		ProductRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.ProductRepo.(*mock.MockRepository).
+	uc.ProductRepository.(*mock.MockRepository).
 		EXPECT().
 		Create(gomock.Any(), product).
 		Return(product, nil).
 		Times(1)
-	res, err := uc.ProductRepo.Create(context.TODO(), product)
+	res, err := uc.ProductRepository.Create(context.TODO(), product)
 
 	assert.Equal(t, product, res)
 	assert.Nil(t, err)
@@ -45,15 +45,15 @@ func TestCreateProductError(t *testing.T) {
 	}
 
 	uc := UseCase{
-		ProductRepo: mock.NewMockRepository(gomock.NewController(t)),
+		ProductRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.ProductRepo.(*mock.MockRepository).
+	uc.ProductRepository.(*mock.MockRepository).
 		EXPECT().
 		Create(gomock.Any(), product).
 		Return(nil, errors.New(errMSG)).
 		Times(1)
-	res, err := uc.ProductRepo.Create(context.TODO(), product)
+	res, err := uc.ProductRepository.Create(context.TODO(), product)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

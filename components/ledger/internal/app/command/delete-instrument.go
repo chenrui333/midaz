@@ -18,7 +18,7 @@ func (uc *UseCase) DeleteInstrumentByID(ctx context.Context, organizationID, led
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Remove instrument for id: %s", id)
 
-	if err := uc.InstrumentRepo.Delete(ctx, organizationID, ledgerID, id); err != nil {
+	if err := uc.InstrumentRepository.Delete(ctx, organizationID, ledgerID, id); err != nil {
 		logger.Errorf("Error deleting instrument on repo by id: %v", err)
 
 		if errors.Is(err, app.ErrDatabaseItemNotFound) {

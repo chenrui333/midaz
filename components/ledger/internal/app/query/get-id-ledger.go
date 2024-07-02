@@ -18,7 +18,7 @@ func (uc *UseCase) GetLedgerByID(ctx context.Context, organizationID, id string)
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Retrieving ledger for id: %s", id)
 
-	ledger, err := uc.LedgerRepo.Find(ctx, uuid.MustParse(organizationID), uuid.MustParse(id))
+	ledger, err := uc.LedgerRepository.Find(ctx, uuid.MustParse(organizationID), uuid.MustParse(id))
 	if err != nil {
 		logger.Errorf("Error getting ledger on repo by id: %v", err)
 
@@ -35,7 +35,7 @@ func (uc *UseCase) GetLedgerByID(ctx context.Context, organizationID, id string)
 	}
 
 	if ledger != nil {
-		metadata, err := uc.MetadataRepo.FindByEntity(ctx, reflect.TypeOf(l.Ledger{}).Name(), id)
+		metadata, err := uc.MetadataRepository.FindByEntity(ctx, reflect.TypeOf(l.Ledger{}).Name(), id)
 		if err != nil {
 			logger.Errorf("Error get metadata on mongodb ledger: %v", err)
 			return nil, err

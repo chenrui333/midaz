@@ -1,7 +1,6 @@
 package http
 
 import (
-	"github.com/LerianStudio/midaz/common/mauth"
 	lib "github.com/LerianStudio/midaz/common/net/http"
 	l "github.com/LerianStudio/midaz/components/ledger/internal/domain/onboarding/ledger"
 	o "github.com/LerianStudio/midaz/components/ledger/internal/domain/onboarding/organization"
@@ -25,7 +24,7 @@ func NewRouter(ah *ports.AccountHandler, ph *ports.PortfolioHandler, lh *ports.L
 	f.Use(lib.WithCorrelationID())
 
 	// -- Middleware --
-	lib.NewAuthnMiddleware(f, mauth.NewAuthClient())
+	// lib.NewAuthnMiddleware(f, mauth.NewAuthClient())
 
 	// -- Routes --
 

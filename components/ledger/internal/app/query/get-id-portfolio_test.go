@@ -24,15 +24,15 @@ func TestGetPortfolioByIDSuccess(t *testing.T) {
 	}
 
 	uc := UseCase{
-		PortfolioRepo: mock.NewMockRepository(gomock.NewController(t)),
+		PortfolioRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.PortfolioRepo.(*mock.MockRepository).
+	uc.PortfolioRepository.(*mock.MockRepository).
 		EXPECT().
 		Find(gomock.Any(), organizationID, ledgerID, id).
 		Return(portfolio, nil).
 		Times(1)
-	res, err := uc.PortfolioRepo.Find(context.TODO(), organizationID, ledgerID, id)
+	res, err := uc.PortfolioRepository.Find(context.TODO(), organizationID, ledgerID, id)
 
 	assert.Equal(t, res, portfolio)
 	assert.Nil(t, err)
@@ -46,15 +46,15 @@ func TestGetPortfolioByIDError(t *testing.T) {
 	errMSG := "errDatabaseItemNotFound"
 
 	uc := UseCase{
-		PortfolioRepo: mock.NewMockRepository(gomock.NewController(t)),
+		PortfolioRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.PortfolioRepo.(*mock.MockRepository).
+	uc.PortfolioRepository.(*mock.MockRepository).
 		EXPECT().
 		Find(gomock.Any(), organizationID, ledgerID, id).
 		Return(nil, errors.New(errMSG)).
 		Times(1)
-	res, err := uc.PortfolioRepo.Find(context.TODO(), organizationID, ledgerID, id)
+	res, err := uc.PortfolioRepository.Find(context.TODO(), organizationID, ledgerID, id)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

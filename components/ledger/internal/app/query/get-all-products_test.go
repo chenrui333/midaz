@@ -22,20 +22,20 @@ func TestGetAllProducts(t *testing.T) {
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockProductRepo := mock.NewMockRepository(ctrl)
+	mockProductRepository := mock.NewMockRepository(ctrl)
 
 	uc := UseCase{
-		ProductRepo: mockProductRepo,
+		ProductRepository: mockProductRepository,
 	}
 
 	t.Run("Success", func(t *testing.T) {
 		products := []*p.Product{{}}
-		mockProductRepo.
+		mockProductRepository.
 			EXPECT().
 			FindAll(gomock.Any(), organizationID, ledgerID, limit, page).
 			Return(products, nil).
 			Times(1)
-		res, err := uc.ProductRepo.FindAll(context.TODO(), organizationID, ledgerID, limit, page)
+		res, err := uc.ProductRepository.FindAll(context.TODO(), organizationID, ledgerID, limit, page)
 
 		assert.NoError(t, err)
 		assert.Len(t, res, 1)
@@ -43,12 +43,12 @@ func TestGetAllProducts(t *testing.T) {
 
 	t.Run("Error", func(t *testing.T) {
 		errMsg := "errDatabaseItemNotFound"
-		mockProductRepo.
+		mockProductRepository.
 			EXPECT().
 			FindAll(gomock.Any(), organizationID, ledgerID, limit, page).
 			Return(nil, errors.New(errMsg)).
 			Times(1)
-		res, err := uc.ProductRepo.FindAll(context.TODO(), organizationID, ledgerID, limit, page)
+		res, err := uc.ProductRepository.FindAll(context.TODO(), organizationID, ledgerID, limit, page)
 
 		assert.EqualError(t, err, errMsg)
 		assert.Nil(t, res)

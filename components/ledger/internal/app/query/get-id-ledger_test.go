@@ -19,15 +19,15 @@ func TestGetLedgerByIDSuccess(t *testing.T) {
 	ledger := &l.Ledger{ID: id.String()}
 
 	uc := UseCase{
-		LedgerRepo: mock.NewMockRepository(gomock.NewController(t)),
+		LedgerRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.LedgerRepo.(*mock.MockRepository).
+	uc.LedgerRepository.(*mock.MockRepository).
 		EXPECT().
 		Find(gomock.Any(), organizationID, id).
 		Return(ledger, nil).
 		Times(1)
-	res, err := uc.LedgerRepo.Find(context.TODO(), organizationID, id)
+	res, err := uc.LedgerRepository.Find(context.TODO(), organizationID, id)
 
 	assert.Equal(t, res, ledger)
 	assert.Nil(t, err)
@@ -40,15 +40,15 @@ func TestGetLedgerByIDError(t *testing.T) {
 	errMSG := "errDatabaseItemNotFound"
 
 	uc := UseCase{
-		LedgerRepo: mock.NewMockRepository(gomock.NewController(t)),
+		LedgerRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.LedgerRepo.(*mock.MockRepository).
+	uc.LedgerRepository.(*mock.MockRepository).
 		EXPECT().
 		Find(gomock.Any(), organizationID, id).
 		Return(nil, errors.New(errMSG)).
 		Times(1)
-	res, err := uc.LedgerRepo.Find(context.TODO(), organizationID, id)
+	res, err := uc.LedgerRepository.Find(context.TODO(), organizationID, id)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

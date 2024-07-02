@@ -35,15 +35,15 @@ type ProfileID string
 // 	ScopeSet map[string]bool
 // }
 
-func NewAuthnMiddleware(app *fiber.App, authClient *mauth.AuthClient) {
+func NewAuthnMiddleware(app *fiber.App, ac *mauth.AuthClient) {
 
 	ctx := context.Background()
-	provider, err := oidc.NewProvider(ctx, authClient.Endpoint)
+	provider, err := oidc.NewProvider(ctx, ac.Endpoint)
 	if err != nil {
 		panic(err)
 	}
 
-	verifier := provider.Verifier(&oidc.Config{ClientID: authClient.ClientID, SkipClientIDCheck: true})
+	verifier := provider.Verifier(&oidc.Config{ClientID: ac.ClientID, SkipClientIDCheck: true})
 
 	app.Use(func(c *fiber.Ctx) error {
 		authHeader := c.Get("Authorization")

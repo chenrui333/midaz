@@ -23,7 +23,7 @@ func (uc *UseCase) UpdateProductByID(ctx context.Context, organizationID, ledger
 		Status: upi.Status,
 	}
 
-	productUpdated, err := uc.ProductRepo.Update(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(id), product)
+	productUpdated, err := uc.ProductRepository.Update(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(id), product)
 	if err != nil {
 		logger.Errorf("Error updating product on repo by id: %v", err)
 
@@ -44,7 +44,7 @@ func (uc *UseCase) UpdateProductByID(ctx context.Context, organizationID, ledger
 			return nil, err
 		}
 
-		if err := uc.MetadataRepo.Update(ctx, reflect.TypeOf(r.Product{}).Name(), id, upi.Metadata); err != nil {
+		if err := uc.MetadataRepository.Update(ctx, reflect.TypeOf(r.Product{}).Name(), id, upi.Metadata); err != nil {
 			return nil, err
 		}
 

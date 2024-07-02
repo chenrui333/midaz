@@ -33,7 +33,7 @@ func (uc *UseCase) CreateLedger(ctx context.Context, organizationID string, cli 
 		UpdatedAt:      time.Now(),
 	}
 
-	led, err := uc.LedgerRepo.Create(ctx, ledger)
+	led, err := uc.LedgerRepository.Create(ctx, ledger)
 	if err != nil {
 		logger.Errorf("Error creating ledger: %v", err)
 		return nil, err
@@ -52,7 +52,7 @@ func (uc *UseCase) CreateLedger(ctx context.Context, organizationID string, cli 
 			UpdatedAt:  time.Now(),
 		}
 
-		if err := uc.MetadataRepo.Create(ctx, reflect.TypeOf(l.Ledger{}).Name(), &meta); err != nil {
+		if err := uc.MetadataRepository.Create(ctx, reflect.TypeOf(l.Ledger{}).Name(), &meta); err != nil {
 			logger.Errorf("Error into creating ledger metadata: %v", err)
 			return nil, err
 		}

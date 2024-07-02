@@ -22,20 +22,20 @@ func TestGetAllPortfolios(t *testing.T) {
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockPortfolioRepo := mock.NewMockRepository(ctrl)
+	mockPortfolioRepository := mock.NewMockRepository(ctrl)
 
 	uc := UseCase{
-		PortfolioRepo: mockPortfolioRepo,
+		PortfolioRepository: mockPortfolioRepository,
 	}
 
 	t.Run("Success", func(t *testing.T) {
 		portfolios := []*p.Portfolio{{}}
-		mockPortfolioRepo.
+		mockPortfolioRepository.
 			EXPECT().
 			FindAll(gomock.Any(), organizationID, ledgerID, limit, page).
 			Return(portfolios, nil).
 			Times(1)
-		res, err := uc.PortfolioRepo.FindAll(context.TODO(), organizationID, ledgerID, limit, page)
+		res, err := uc.PortfolioRepository.FindAll(context.TODO(), organizationID, ledgerID, limit, page)
 
 		assert.NoError(t, err)
 		assert.Len(t, res, 1)
@@ -43,12 +43,12 @@ func TestGetAllPortfolios(t *testing.T) {
 
 	t.Run("Error", func(t *testing.T) {
 		errMsg := "errDatabaseItemNotFound"
-		mockPortfolioRepo.
+		mockPortfolioRepository.
 			EXPECT().
 			FindAll(gomock.Any(), organizationID, ledgerID, limit, page).
 			Return(nil, errors.New(errMsg)).
 			Times(1)
-		res, err := uc.PortfolioRepo.FindAll(context.TODO(), organizationID, ledgerID, limit, page)
+		res, err := uc.PortfolioRepository.FindAll(context.TODO(), organizationID, ledgerID, limit, page)
 
 		assert.EqualError(t, err, errMsg)
 		assert.Nil(t, res)

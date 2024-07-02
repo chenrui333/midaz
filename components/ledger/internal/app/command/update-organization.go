@@ -36,7 +36,7 @@ func (uc *UseCase) UpdateOrganizationByID(ctx context.Context, id string, uoi *o
 		Status:               uoi.Status,
 	}
 
-	organizationUpdated, err := uc.OrganizationRepo.Update(ctx, uuid.MustParse(id), organization)
+	organizationUpdated, err := uc.OrganizationRepository.Update(ctx, uuid.MustParse(id), organization)
 	if err != nil {
 		logger.Errorf("Error updating organization on repo by id: %v", err)
 
@@ -57,7 +57,7 @@ func (uc *UseCase) UpdateOrganizationByID(ctx context.Context, id string, uoi *o
 			return nil, err
 		}
 
-		if err := uc.MetadataRepo.Update(ctx, reflect.TypeOf(o.Organization{}).Name(), id, uoi.Metadata); err != nil {
+		if err := uc.MetadataRepository.Update(ctx, reflect.TypeOf(o.Organization{}).Name(), id, uoi.Metadata); err != nil {
 			return nil, err
 		}
 

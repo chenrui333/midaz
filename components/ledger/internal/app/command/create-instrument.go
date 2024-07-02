@@ -36,7 +36,7 @@ func (uc *UseCase) CreateInstrument(ctx context.Context, organizationID, ledgerI
 		}
 	}
 
-	_, err := uc.InstrumentRepo.FindByNameOrCode(ctx, organizationID, ledgerID, cii.Name, cii.Code)
+	_, err := uc.InstrumentRepository.FindByNameOrCode(ctx, organizationID, ledgerID, cii.Name, cii.Code)
 	if err != nil {
 		logger.Errorf("Error creating instrument: %v", err)
 		return nil, err
@@ -53,7 +53,7 @@ func (uc *UseCase) CreateInstrument(ctx context.Context, organizationID, ledgerI
 		UpdatedAt:      time.Now(),
 	}
 
-	inst, err := uc.InstrumentRepo.Create(ctx, instrument)
+	inst, err := uc.InstrumentRepository.Create(ctx, instrument)
 	if err != nil {
 		logger.Errorf("Error creating instrument: %v", err)
 		return nil, err
@@ -71,7 +71,7 @@ func (uc *UseCase) CreateInstrument(ctx context.Context, organizationID, ledgerI
 			CreatedAt:  time.Now(),
 			UpdatedAt:  time.Now(),
 		}
-		if err := uc.MetadataRepo.Create(ctx, reflect.TypeOf(i.Instrument{}).Name(), &meta); err != nil {
+		if err := uc.MetadataRepository.Create(ctx, reflect.TypeOf(i.Instrument{}).Name(), &meta); err != nil {
 			logger.Errorf("Error into creating instrument metadata: %v", err)
 			return nil, err
 		}

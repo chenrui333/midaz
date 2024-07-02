@@ -21,15 +21,15 @@ func TestCreateInstrumentSuccess(t *testing.T) {
 	}
 
 	uc := UseCase{
-		InstrumentRepo: mock.NewMockRepository(gomock.NewController(t)),
+		InstrumentRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.InstrumentRepo.(*mock.MockRepository).
+	uc.InstrumentRepository.(*mock.MockRepository).
 		EXPECT().
 		Create(gomock.Any(), instrument).
 		Return(instrument, nil).
 		Times(1)
-	res, err := uc.InstrumentRepo.Create(context.TODO(), instrument)
+	res, err := uc.InstrumentRepository.Create(context.TODO(), instrument)
 
 	assert.Equal(t, instrument, res)
 	assert.Nil(t, err)
@@ -44,15 +44,15 @@ func TestCreateInstrumentError(t *testing.T) {
 	}
 
 	uc := UseCase{
-		InstrumentRepo: mock.NewMockRepository(gomock.NewController(t)),
+		InstrumentRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.InstrumentRepo.(*mock.MockRepository).
+	uc.InstrumentRepository.(*mock.MockRepository).
 		EXPECT().
 		Create(gomock.Any(), instrument).
 		Return(nil, errors.New(errMSG)).
 		Times(1)
-	res, err := uc.InstrumentRepo.Create(context.TODO(), instrument)
+	res, err := uc.InstrumentRepository.Create(context.TODO(), instrument)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

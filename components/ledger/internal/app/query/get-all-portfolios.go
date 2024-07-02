@@ -18,7 +18,7 @@ func (uc *UseCase) GetAllPortfolio(ctx context.Context, organizationID, ledgerID
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Retrieving portfolios")
 
-	portfolios, err := uc.PortfolioRepo.FindAll(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), filter.Limit, filter.Page)
+	portfolios, err := uc.PortfolioRepository.FindAll(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), filter.Limit, filter.Page)
 	if err != nil {
 		logger.Errorf("Error getting portfolios on repo: %v", err)
 
@@ -35,7 +35,7 @@ func (uc *UseCase) GetAllPortfolio(ctx context.Context, organizationID, ledgerID
 	}
 
 	if portfolios != nil {
-		metadata, err := uc.MetadataRepo.FindList(ctx, reflect.TypeOf(p.Portfolio{}).Name(), filter)
+		metadata, err := uc.MetadataRepository.FindList(ctx, reflect.TypeOf(p.Portfolio{}).Name(), filter)
 		if err != nil {
 			return nil, common.EntityNotFoundError{
 				EntityType: reflect.TypeOf(p.Portfolio{}).Name(),

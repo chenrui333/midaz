@@ -25,15 +25,15 @@ func TestUpdateLedgerByIDSuccess(t *testing.T) {
 	}
 
 	uc := UseCase{
-		LedgerRepo: mock.NewMockRepository(gomock.NewController(t)),
+		LedgerRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.LedgerRepo.(*mock.MockRepository).
+	uc.LedgerRepository.(*mock.MockRepository).
 		EXPECT().
 		Update(gomock.Any(), organizationID, id, ledger).
 		Return(ledger, nil).
 		Times(1)
-	res, err := uc.LedgerRepo.Update(context.TODO(), organizationID, id, ledger)
+	res, err := uc.LedgerRepository.Update(context.TODO(), organizationID, id, ledger)
 
 	assert.Equal(t, ledger, res)
 	assert.Nil(t, err)
@@ -53,14 +53,14 @@ func TestUpdateLedgerByIDError(t *testing.T) {
 	}
 
 	uc := UseCase{
-		LedgerRepo: mock.NewMockRepository(gomock.NewController(t)),
+		LedgerRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.LedgerRepo.(*mock.MockRepository).
+	uc.LedgerRepository.(*mock.MockRepository).
 		EXPECT().
 		Update(gomock.Any(), organizationID, id, ledger).
 		Return(nil, errors.New(errMSG))
-	res, err := uc.LedgerRepo.Update(context.TODO(), organizationID, id, ledger)
+	res, err := uc.LedgerRepository.Update(context.TODO(), organizationID, id, ledger)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

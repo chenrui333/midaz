@@ -21,7 +21,7 @@ func TestGetAllOrganizations(t *testing.T) {
 	page := 1
 
 	uc := UseCase{
-		OrganizationRepo: mockOrganizationRepo,
+		OrganizationRepository: mockOrganizationRepo,
 	}
 
 	t.Run("Success", func(t *testing.T) {
@@ -31,7 +31,7 @@ func TestGetAllOrganizations(t *testing.T) {
 			FindAll(gomock.Any(), limit, page).
 			Return(organizations, nil).
 			Times(1)
-		res, err := uc.OrganizationRepo.FindAll(context.TODO(), limit, page)
+		res, err := uc.OrganizationRepository.FindAll(context.TODO(), limit, page)
 
 		assert.NoError(t, err)
 		assert.Len(t, res, 1)
@@ -44,7 +44,7 @@ func TestGetAllOrganizations(t *testing.T) {
 			FindAll(gomock.Any(), limit, page).
 			Return(nil, errors.New(errMsg)).
 			Times(1)
-		res, err := uc.OrganizationRepo.FindAll(context.TODO(), limit, page)
+		res, err := uc.OrganizationRepository.FindAll(context.TODO(), limit, page)
 
 		assert.EqualError(t, err, errMsg)
 		assert.Nil(t, res)

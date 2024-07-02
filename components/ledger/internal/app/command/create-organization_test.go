@@ -18,15 +18,15 @@ func TestCreateOrganizationSuccess(t *testing.T) {
 	organization := &o.Organization{ID: id}
 
 	uc := UseCase{
-		OrganizationRepo: mock.NewMockRepository(gomock.NewController(t)),
+		OrganizationRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.OrganizationRepo.(*mock.MockRepository).
+	uc.OrganizationRepository.(*mock.MockRepository).
 		EXPECT().
 		Create(gomock.Any(), organization).
 		Return(organization, nil).
 		Times(1)
-	res, err := uc.OrganizationRepo.Create(context.TODO(), organization)
+	res, err := uc.OrganizationRepository.Create(context.TODO(), organization)
 
 	assert.Equal(t, organization, res)
 	assert.Nil(t, err)
@@ -38,14 +38,14 @@ func TestCreateOrganizationError(t *testing.T) {
 	errMSG := "err to create organization on database"
 
 	uc := UseCase{
-		OrganizationRepo: mock.NewMockRepository(gomock.NewController(t)),
+		OrganizationRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.OrganizationRepo.(*mock.MockRepository).
+	uc.OrganizationRepository.(*mock.MockRepository).
 		EXPECT().
 		Create(gomock.Any(), organization).
 		Return(nil, errors.New(errMSG))
-	res, err := uc.OrganizationRepo.Create(context.TODO(), organization)
+	res, err := uc.OrganizationRepository.Create(context.TODO(), organization)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

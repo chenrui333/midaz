@@ -24,7 +24,7 @@ func (uc *UseCase) UpdateLedgerByID(ctx context.Context, organizationID, id stri
 		Status:         uli.Status,
 	}
 
-	ledgerUpdated, err := uc.LedgerRepo.Update(ctx, uuid.MustParse(organizationID), uuid.MustParse(id), ledger)
+	ledgerUpdated, err := uc.LedgerRepository.Update(ctx, uuid.MustParse(organizationID), uuid.MustParse(id), ledger)
 	if err != nil {
 		logger.Errorf("Error updating ledger on repo by id: %v", err)
 
@@ -45,7 +45,7 @@ func (uc *UseCase) UpdateLedgerByID(ctx context.Context, organizationID, id stri
 			return nil, err
 		}
 
-		if err := uc.MetadataRepo.Update(ctx, reflect.TypeOf(l.Ledger{}).Name(), id, uli.Metadata); err != nil {
+		if err := uc.MetadataRepository.Update(ctx, reflect.TypeOf(l.Ledger{}).Name(), id, uli.Metadata); err != nil {
 			return nil, err
 		}
 

@@ -23,7 +23,7 @@ func (uc *UseCase) UpdateInstrumentByID(ctx context.Context, organizationID, led
 		Status: uii.Status,
 	}
 
-	instrumentUpdated, err := uc.InstrumentRepo.Update(ctx, organizationID, ledgerID, id, instrument)
+	instrumentUpdated, err := uc.InstrumentRepository.Update(ctx, organizationID, ledgerID, id, instrument)
 	if err != nil {
 		logger.Errorf("Error updating instrument on repo by id: %v", err)
 
@@ -44,7 +44,7 @@ func (uc *UseCase) UpdateInstrumentByID(ctx context.Context, organizationID, led
 			return nil, err
 		}
 
-		if err := uc.MetadataRepo.Update(ctx, reflect.TypeOf(i.Instrument{}).Name(), id.String(), uii.Metadata); err != nil {
+		if err := uc.MetadataRepository.Update(ctx, reflect.TypeOf(i.Instrument{}).Name(), id.String(), uii.Metadata); err != nil {
 			return nil, err
 		}
 

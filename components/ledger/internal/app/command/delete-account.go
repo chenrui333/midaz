@@ -18,7 +18,7 @@ func (uc *UseCase) DeleteAccountByID(ctx context.Context, organizationID, ledger
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Remove account for id: %s", id)
 
-	if err := uc.AccountRepo.Delete(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(portfolioID), uuid.MustParse(id)); err != nil {
+	if err := uc.AccountRepository.Delete(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(portfolioID), uuid.MustParse(id)); err != nil {
 		logger.Errorf("Error deleting account on repo by id: %v", err)
 
 		if errors.Is(err, app.ErrDatabaseItemNotFound) {

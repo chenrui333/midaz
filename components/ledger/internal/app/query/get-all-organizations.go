@@ -17,7 +17,7 @@ func (uc *UseCase) GetAllOrganizations(ctx context.Context, filter commonHTTP.Qu
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Retrieving organizations")
 
-	organizations, err := uc.OrganizationRepo.FindAll(ctx, filter.Limit, filter.Page)
+	organizations, err := uc.OrganizationRepository.FindAll(ctx, filter.Limit, filter.Page)
 	if err != nil {
 		logger.Errorf("Error getting organizations on repo: %v", err)
 
@@ -34,7 +34,7 @@ func (uc *UseCase) GetAllOrganizations(ctx context.Context, filter commonHTTP.Qu
 	}
 
 	if organizations != nil {
-		metadata, err := uc.MetadataRepo.FindList(ctx, reflect.TypeOf(o.Organization{}).Name(), filter)
+		metadata, err := uc.MetadataRepository.FindList(ctx, reflect.TypeOf(o.Organization{}).Name(), filter)
 		if err != nil {
 			return nil, common.EntityNotFoundError{
 				EntityType: reflect.TypeOf(o.Organization{}).Name(),

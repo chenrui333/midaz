@@ -19,16 +19,16 @@ func TestMetadataCreateSuccess(t *testing.T) {
 	metadata := meta.Metadata{ID: primitive.NewObjectID()}
 	collection := reflect.TypeOf(o.Organization{}).Name()
 	uc := UseCase{
-		MetadataRepo: mock.NewMockRepository(gomock.NewController(t)),
+		MetadataRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.MetadataRepo.(*mock.MockRepository).
+	uc.MetadataRepository.(*mock.MockRepository).
 		EXPECT().
 		Create(gomock.Any(), collection, &metadata).
 		Return(nil).
 		Times(1)
 
-	err := uc.MetadataRepo.Create(context.TODO(), collection, &metadata)
+	err := uc.MetadataRepository.Create(context.TODO(), collection, &metadata)
 	assert.Nil(t, err)
 }
 
@@ -38,16 +38,16 @@ func TestMetadataCreateError(t *testing.T) {
 	metadata := meta.Metadata{ID: primitive.NewObjectID()}
 	collection := reflect.TypeOf(o.Organization{}).Name()
 	uc := UseCase{
-		MetadataRepo: mock.NewMockRepository(gomock.NewController(t)),
+		MetadataRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.MetadataRepo.(*mock.MockRepository).
+	uc.MetadataRepository.(*mock.MockRepository).
 		EXPECT().
 		Create(gomock.Any(), collection, &metadata).
 		Return(errors.New(errMSG)).
 		Times(1)
 
-	err := uc.MetadataRepo.Create(context.TODO(), collection, &metadata)
+	err := uc.MetadataRepository.Create(context.TODO(), collection, &metadata)
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)
 }

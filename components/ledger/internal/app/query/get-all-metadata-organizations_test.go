@@ -29,18 +29,18 @@ func TestGetAllMetadataOrganizations(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockMetadataRepo := mock.NewMockRepository(gomock.NewController(t))
+	mockMetadataRepository := mock.NewMockRepository(gomock.NewController(t))
 	uc := UseCase{
-		MetadataRepo: mockMetadataRepo,
+		MetadataRepository: mockMetadataRepository,
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		mockMetadataRepo.
+		mockMetadataRepository.
 			EXPECT().
 			FindList(gomock.Any(), collection, filter).
 			Return([]*meta.Metadata{{ID: primitive.NewObjectID()}}, nil).
 			Times(1)
-		res, err := uc.MetadataRepo.FindList(context.TODO(), collection, filter)
+		res, err := uc.MetadataRepository.FindList(context.TODO(), collection, filter)
 
 		assert.NoError(t, err)
 		assert.Len(t, res, 1)
@@ -48,12 +48,12 @@ func TestGetAllMetadataOrganizations(t *testing.T) {
 
 	t.Run("Error", func(t *testing.T) {
 		errMSG := "errDatabaseItemNotFound"
-		mockMetadataRepo.
+		mockMetadataRepository.
 			EXPECT().
 			FindList(gomock.Any(), collection, filter).
 			Return(nil, errors.New(errMSG)).
 			Times(1)
-		res, err := uc.MetadataRepo.FindList(context.TODO(), collection, filter)
+		res, err := uc.MetadataRepository.FindList(context.TODO(), collection, filter)
 
 		assert.EqualError(t, err, errMSG)
 		assert.Nil(t, res)

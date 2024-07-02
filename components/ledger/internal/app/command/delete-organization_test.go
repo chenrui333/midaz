@@ -16,15 +16,15 @@ func TestDeleteOrganizationByIDSuccess(t *testing.T) {
 	id := uuid.New()
 
 	uc := UseCase{
-		OrganizationRepo: mock.NewMockRepository(gomock.NewController(t)),
+		OrganizationRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.OrganizationRepo.(*mock.MockRepository).
+	uc.OrganizationRepository.(*mock.MockRepository).
 		EXPECT().
 		Delete(gomock.Any(), id).
 		Return(nil).
 		Times(1)
-	err := uc.OrganizationRepo.Delete(context.TODO(), id)
+	err := uc.OrganizationRepository.Delete(context.TODO(), id)
 
 	assert.Nil(t, err)
 }
@@ -35,15 +35,15 @@ func TestDeleteOrganizationByIDError(t *testing.T) {
 	errMSG := "errDatabaseItemNotFound"
 
 	uc := UseCase{
-		OrganizationRepo: mock.NewMockRepository(gomock.NewController(t)),
+		OrganizationRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.OrganizationRepo.(*mock.MockRepository).
+	uc.OrganizationRepository.(*mock.MockRepository).
 		EXPECT().
 		Delete(gomock.Any(), id).
 		Return(errors.New(errMSG)).
 		Times(1)
-	err := uc.OrganizationRepo.Delete(context.TODO(), id)
+	err := uc.OrganizationRepository.Delete(context.TODO(), id)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

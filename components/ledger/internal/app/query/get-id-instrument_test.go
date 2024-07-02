@@ -24,15 +24,15 @@ func TestGetInstrumentByIDSuccess(t *testing.T) {
 	}
 
 	uc := UseCase{
-		InstrumentRepo: mock.NewMockRepository(gomock.NewController(t)),
+		InstrumentRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.InstrumentRepo.(*mock.MockRepository).
+	uc.InstrumentRepository.(*mock.MockRepository).
 		EXPECT().
 		Find(gomock.Any(), organizationID, ledgerID, id).
 		Return(instrument, nil).
 		Times(1)
-	res, err := uc.InstrumentRepo.Find(context.TODO(), organizationID, ledgerID, id)
+	res, err := uc.InstrumentRepository.Find(context.TODO(), organizationID, ledgerID, id)
 
 	assert.Equal(t, res, instrument)
 	assert.Nil(t, err)
@@ -46,15 +46,15 @@ func TestGetInstrumentByIDError(t *testing.T) {
 	errMSG := "errDatabaseItemNotFound"
 
 	uc := UseCase{
-		InstrumentRepo: mock.NewMockRepository(gomock.NewController(t)),
+		InstrumentRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.InstrumentRepo.(*mock.MockRepository).
+	uc.InstrumentRepository.(*mock.MockRepository).
 		EXPECT().
 		Find(gomock.Any(), organizationID, ledgerID, id).
 		Return(nil, errors.New(errMSG)).
 		Times(1)
-	res, err := uc.InstrumentRepo.Find(context.TODO(), organizationID, ledgerID, id)
+	res, err := uc.InstrumentRepository.Find(context.TODO(), organizationID, ledgerID, id)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

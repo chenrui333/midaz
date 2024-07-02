@@ -22,15 +22,15 @@ func TestCreateAccountSuccess(t *testing.T) {
 	}
 
 	uc := UseCase{
-		AccountRepo: mock.NewMockRepository(gomock.NewController(t)),
+		AccountRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.AccountRepo.(*mock.MockRepository).
+	uc.AccountRepository.(*mock.MockRepository).
 		EXPECT().
 		Create(gomock.Any(), account).
 		Return(account, nil).
 		Times(1)
-	res, err := uc.AccountRepo.Create(context.TODO(), account)
+	res, err := uc.AccountRepository.Create(context.TODO(), account)
 
 	assert.Equal(t, account, res)
 	assert.Nil(t, err)
@@ -47,15 +47,15 @@ func TestCreateAccountError(t *testing.T) {
 	}
 
 	uc := UseCase{
-		AccountRepo: mock.NewMockRepository(gomock.NewController(t)),
+		AccountRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.AccountRepo.(*mock.MockRepository).
+	uc.AccountRepository.(*mock.MockRepository).
 		EXPECT().
 		Create(gomock.Any(), account).
 		Return(nil, errors.New(errMSG)).
 		Times(1)
-	res, err := uc.AccountRepo.Create(context.TODO(), account)
+	res, err := uc.AccountRepository.Create(context.TODO(), account)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

@@ -18,7 +18,7 @@ func (uc *UseCase) GetPortfolioByID(ctx context.Context, organizationID, ledgerI
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Retrieving portfolio for id: %s", id)
 
-	portfolio, err := uc.PortfolioRepo.Find(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(id))
+	portfolio, err := uc.PortfolioRepository.Find(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(id))
 	if err != nil {
 		logger.Errorf("Error getting portfolio on repo by id: %v", err)
 
@@ -35,7 +35,7 @@ func (uc *UseCase) GetPortfolioByID(ctx context.Context, organizationID, ledgerI
 	}
 
 	if portfolio != nil {
-		metadata, err := uc.MetadataRepo.FindByEntity(ctx, reflect.TypeOf(p.Portfolio{}).Name(), id)
+		metadata, err := uc.MetadataRepository.FindByEntity(ctx, reflect.TypeOf(p.Portfolio{}).Name(), id)
 		if err != nil {
 			logger.Errorf("Error get metadata on mongodb portfolio: %v", err)
 			return nil, err

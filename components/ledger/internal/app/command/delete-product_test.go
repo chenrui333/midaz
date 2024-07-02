@@ -18,15 +18,15 @@ func TestDeleteProductByIDSuccess(t *testing.T) {
 	ledgerID := uuid.New()
 
 	uc := UseCase{
-		ProductRepo: mock.NewMockRepository(gomock.NewController(t)),
+		ProductRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.ProductRepo.(*mock.MockRepository).
+	uc.ProductRepository.(*mock.MockRepository).
 		EXPECT().
 		Delete(gomock.Any(), organizationID, ledgerID, id).
 		Return(nil).
 		Times(1)
-	err := uc.ProductRepo.Delete(context.TODO(), organizationID, ledgerID, id)
+	err := uc.ProductRepository.Delete(context.TODO(), organizationID, ledgerID, id)
 
 	assert.Nil(t, err)
 }
@@ -39,15 +39,15 @@ func TestDeleteProductByIDError(t *testing.T) {
 	errMSG := "errDatabaseItemNotFound"
 
 	uc := UseCase{
-		ProductRepo: mock.NewMockRepository(gomock.NewController(t)),
+		ProductRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.ProductRepo.(*mock.MockRepository).
+	uc.ProductRepository.(*mock.MockRepository).
 		EXPECT().
 		Delete(gomock.Any(), organizationID, ledgerID, id).
 		Return(errors.New(errMSG)).
 		Times(1)
-	err := uc.ProductRepo.Delete(context.TODO(), organizationID, ledgerID, id)
+	err := uc.ProductRepository.Delete(context.TODO(), organizationID, ledgerID, id)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

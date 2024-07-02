@@ -18,7 +18,7 @@ func (uc *UseCase) GetAllMetadataInstruments(ctx context.Context, organizationID
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Retrieving instruments")
 
-	metadata, err := uc.MetadataRepo.FindList(ctx, reflect.TypeOf(i.Instrument{}).Name(), filter)
+	metadata, err := uc.MetadataRepository.FindList(ctx, reflect.TypeOf(i.Instrument{}).Name(), filter)
 	if err != nil || metadata == nil {
 		return nil, common.EntityNotFoundError{
 			EntityType: reflect.TypeOf(i.Instrument{}).Name(),
@@ -36,7 +36,7 @@ func (uc *UseCase) GetAllMetadataInstruments(ctx context.Context, organizationID
 		metadataMap[meta.EntityID] = meta.Data
 	}
 
-	instruments, err := uc.InstrumentRepo.ListByIDs(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuids)
+	instruments, err := uc.InstrumentRepository.ListByIDs(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuids)
 	if err != nil {
 		logger.Errorf("Error getting instruments on repo by query params: %v", err)
 

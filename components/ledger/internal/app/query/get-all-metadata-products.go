@@ -18,7 +18,7 @@ func (uc *UseCase) GetAllMetadataProducts(ctx context.Context, organizationID, l
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Retrieving products")
 
-	metadata, err := uc.MetadataRepo.FindList(ctx, reflect.TypeOf(r.Product{}).Name(), filter)
+	metadata, err := uc.MetadataRepository.FindList(ctx, reflect.TypeOf(r.Product{}).Name(), filter)
 	if err != nil || metadata == nil {
 		return nil, common.EntityNotFoundError{
 			EntityType: reflect.TypeOf(r.Product{}).Name(),
@@ -36,7 +36,7 @@ func (uc *UseCase) GetAllMetadataProducts(ctx context.Context, organizationID, l
 		metadataMap[meta.EntityID] = meta.Data
 	}
 
-	products, err := uc.ProductRepo.FindByIDs(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuids)
+	products, err := uc.ProductRepository.FindByIDs(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuids)
 	if err != nil {
 		logger.Errorf("Error getting products on repo by query params: %v", err)
 

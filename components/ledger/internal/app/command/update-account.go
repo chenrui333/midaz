@@ -30,7 +30,7 @@ func (uc *UseCase) UpdateAccountByID(ctx context.Context, organizationID, ledger
 		Metadata:  uai.Metadata,
 	}
 
-	accountUpdated, err := uc.AccountRepo.Update(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(portfolioID), uuid.MustParse(id), account)
+	accountUpdated, err := uc.AccountRepository.Update(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(portfolioID), uuid.MustParse(id), account)
 	if err != nil {
 		logger.Errorf("Error updating account on repo by id: %v", err)
 
@@ -51,7 +51,7 @@ func (uc *UseCase) UpdateAccountByID(ctx context.Context, organizationID, ledger
 			return nil, err
 		}
 
-		err := uc.MetadataRepo.Update(ctx, reflect.TypeOf(a.Account{}).Name(), id, uai.Metadata)
+		err := uc.MetadataRepository.Update(ctx, reflect.TypeOf(a.Account{}).Name(), id, uai.Metadata)
 		if err != nil {
 			return nil, err
 		}

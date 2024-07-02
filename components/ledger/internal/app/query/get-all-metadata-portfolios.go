@@ -18,7 +18,7 @@ func (uc *UseCase) GetAllMetadataPortfolios(ctx context.Context, organizationID,
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Retrieving portfolios")
 
-	metadata, err := uc.MetadataRepo.FindList(ctx, reflect.TypeOf(p.Portfolio{}).Name(), filter)
+	metadata, err := uc.MetadataRepository.FindList(ctx, reflect.TypeOf(p.Portfolio{}).Name(), filter)
 	if err != nil || metadata == nil {
 		return nil, common.EntityNotFoundError{
 			EntityType: reflect.TypeOf(p.Portfolio{}).Name(),
@@ -36,7 +36,7 @@ func (uc *UseCase) GetAllMetadataPortfolios(ctx context.Context, organizationID,
 		metadataMap[meta.EntityID] = meta.Data
 	}
 
-	portfolios, err := uc.PortfolioRepo.ListByIDs(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuids)
+	portfolios, err := uc.PortfolioRepository.ListByIDs(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuids)
 	if err != nil {
 		logger.Errorf("Error getting portfolios on repo by query params: %v", err)
 

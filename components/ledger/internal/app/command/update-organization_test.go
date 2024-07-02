@@ -19,15 +19,15 @@ func TestUpdateOrganizationByIDSuccess(t *testing.T) {
 	organization := &o.Organization{ID: id.String(), UpdatedAt: time.Now()}
 
 	uc := UseCase{
-		OrganizationRepo: mock.NewMockRepository(gomock.NewController(t)),
+		OrganizationRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.OrganizationRepo.(*mock.MockRepository).
+	uc.OrganizationRepository.(*mock.MockRepository).
 		EXPECT().
 		Update(gomock.Any(), id, organization).
 		Return(organization, nil).
 		Times(1)
-	res, err := uc.OrganizationRepo.Update(context.TODO(), id, organization)
+	res, err := uc.OrganizationRepository.Update(context.TODO(), id, organization)
 
 	assert.Equal(t, organization, res)
 	assert.Nil(t, err)
@@ -40,14 +40,14 @@ func TestUpdateOrganizationByIDError(t *testing.T) {
 	organization := &o.Organization{ID: id.String(), UpdatedAt: time.Now()}
 
 	uc := UseCase{
-		OrganizationRepo: mock.NewMockRepository(gomock.NewController(t)),
+		OrganizationRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.OrganizationRepo.(*mock.MockRepository).
+	uc.OrganizationRepository.(*mock.MockRepository).
 		EXPECT().
 		Update(gomock.Any(), id, organization).
 		Return(nil, errors.New(errMSG))
-	res, err := uc.OrganizationRepo.Update(context.TODO(), id, organization)
+	res, err := uc.OrganizationRepository.Update(context.TODO(), id, organization)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

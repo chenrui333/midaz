@@ -18,7 +18,7 @@ func (uc *UseCase) GetProductByID(ctx context.Context, organizationID, ledgerID,
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Retrieving product for id: %s", id)
 
-	product, err := uc.ProductRepo.Find(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(id))
+	product, err := uc.ProductRepository.Find(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(id))
 	if err != nil {
 		logger.Errorf("Error getting product on repo by id: %v", err)
 
@@ -35,7 +35,7 @@ func (uc *UseCase) GetProductByID(ctx context.Context, organizationID, ledgerID,
 	}
 
 	if product != nil {
-		metadata, err := uc.MetadataRepo.FindByEntity(ctx, reflect.TypeOf(r.Product{}).Name(), id)
+		metadata, err := uc.MetadataRepository.FindByEntity(ctx, reflect.TypeOf(r.Product{}).Name(), id)
 		if err != nil {
 			logger.Errorf("Error get metadata on mongodb product: %v", err)
 			return nil, err

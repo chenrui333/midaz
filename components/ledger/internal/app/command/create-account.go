@@ -45,7 +45,7 @@ func (uc *UseCase) CreateAccount(ctx context.Context, organizationID, ledgerID, 
 	}
 
 	if cai.EntityID == nil {
-		portfolio, err := uc.PortfolioRepo.Find(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(portfolioID))
+		portfolio, err := uc.PortfolioRepository.Find(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(portfolioID))
 		if err != nil {
 			logger.Errorf("Error find portfolio to get Entity ID: %v", err)
 			return nil, err
@@ -55,7 +55,7 @@ func (uc *UseCase) CreateAccount(ctx context.Context, organizationID, ledgerID, 
 	}
 
 	if !common.IsNilOrEmpty(cai.ParentAccountID) {
-		acc, err := uc.AccountRepo.Find(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(portfolioID), uuid.MustParse(*cai.ParentAccountID))
+		acc, err := uc.AccountRepository.Find(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(portfolioID), uuid.MustParse(*cai.ParentAccountID))
 		if err != nil {
 			return nil, err
 		}
@@ -71,7 +71,7 @@ func (uc *UseCase) CreateAccount(ctx context.Context, organizationID, ledgerID, 
 	}
 
 	if !common.IsNilOrEmpty(cai.Alias) {
-		_, err := uc.AccountRepo.FindByAlias(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(portfolioID), *cai.Alias)
+		_, err := uc.AccountRepository.FindByAlias(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(portfolioID), *cai.Alias)
 		if err != nil {
 			return nil, err
 		}
@@ -95,7 +95,7 @@ func (uc *UseCase) CreateAccount(ctx context.Context, organizationID, ledgerID, 
 		UpdatedAt:       time.Now(),
 	}
 
-	port, err := uc.AccountRepo.Create(ctx, account)
+	port, err := uc.AccountRepository.Create(ctx, account)
 	if err != nil {
 		logger.Errorf("Error creating account: %v", err)
 		return nil, err
@@ -114,7 +114,7 @@ func (uc *UseCase) CreateAccount(ctx context.Context, organizationID, ledgerID, 
 			UpdatedAt:  time.Now(),
 		}
 
-		if err := uc.MetadataRepo.Create(ctx, reflect.TypeOf(a.Account{}).Name(), &meta); err != nil {
+		if err := uc.MetadataRepository.Create(ctx, reflect.TypeOf(a.Account{}).Name(), &meta); err != nil {
 			logger.Errorf("Error into creating account metadata: %v", err)
 			return nil, err
 		}

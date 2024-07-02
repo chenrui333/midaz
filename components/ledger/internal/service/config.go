@@ -23,6 +23,12 @@ type Config struct {
 	MongoDBUser       string `env:"MONGO_USER"`
 	MongoDBPassword   string `env:"MONGO_PASSWORD"`
 	MongoDBPort       string `env:"MONGO_PORT"`
+	AuthHost          string `env:"AUTH_HOST"`
+	AuthPort          string `env:"AUTH_PORT"`
+	AuthRealm         string `env:"AUTH_REALM"`
+	AuthEndpoint      string `env:"AUTH_ENDPOINT"`
+	AuthClientID      string `env:"AUTH_CLIENT_ID"`
+	AuthClientSecret  string `env:"AUTH_CLIENT_SECRET"`
 }
 
 // NewConfig creates a instance of Config.

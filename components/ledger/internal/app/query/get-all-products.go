@@ -18,7 +18,7 @@ func (uc *UseCase) GetAllProducts(ctx context.Context, organizationID, ledgerID 
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Retrieving products")
 
-	products, err := uc.ProductRepo.FindAll(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), filter.Limit, filter.Page)
+	products, err := uc.ProductRepository.FindAll(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), filter.Limit, filter.Page)
 	if err != nil {
 		logger.Errorf("Error getting products on repo: %v", err)
 
@@ -35,7 +35,7 @@ func (uc *UseCase) GetAllProducts(ctx context.Context, organizationID, ledgerID 
 	}
 
 	if products != nil {
-		metadata, err := uc.MetadataRepo.FindList(ctx, reflect.TypeOf(r.Product{}).Name(), filter)
+		metadata, err := uc.MetadataRepository.FindList(ctx, reflect.TypeOf(r.Product{}).Name(), filter)
 		if err != nil {
 			return nil, common.EntityNotFoundError{
 				EntityType: reflect.TypeOf(r.Product{}).Name(),

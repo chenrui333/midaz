@@ -17,15 +17,15 @@ func TestDeleteLedgerByIDSuccess(t *testing.T) {
 	organizationID := uuid.New()
 
 	uc := UseCase{
-		LedgerRepo: mock.NewMockRepository(gomock.NewController(t)),
+		LedgerRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.LedgerRepo.(*mock.MockRepository).
+	uc.LedgerRepository.(*mock.MockRepository).
 		EXPECT().
 		Delete(gomock.Any(), organizationID, id).
 		Return(nil).
 		Times(1)
-	err := uc.LedgerRepo.Delete(context.TODO(), organizationID, id)
+	err := uc.LedgerRepository.Delete(context.TODO(), organizationID, id)
 
 	assert.Nil(t, err)
 }
@@ -37,15 +37,15 @@ func TestDeleteLedgerByIDError(t *testing.T) {
 	errMSG := "errDatabaseItemNotFound"
 
 	uc := UseCase{
-		LedgerRepo: mock.NewMockRepository(gomock.NewController(t)),
+		LedgerRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.LedgerRepo.(*mock.MockRepository).
+	uc.LedgerRepository.(*mock.MockRepository).
 		EXPECT().
 		Delete(gomock.Any(), organizationID, id).
 		Return(errors.New(errMSG)).
 		Times(1)
-	err := uc.LedgerRepo.Delete(context.TODO(), organizationID, id)
+	err := uc.LedgerRepository.Delete(context.TODO(), organizationID, id)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

@@ -20,15 +20,15 @@ func TestCreateLedgerSuccess(t *testing.T) {
 	}
 
 	uc := UseCase{
-		LedgerRepo: mock.NewMockRepository(gomock.NewController(t)),
+		LedgerRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.LedgerRepo.(*mock.MockRepository).
+	uc.LedgerRepository.(*mock.MockRepository).
 		EXPECT().
 		Create(gomock.Any(), ledger).
 		Return(ledger, nil).
 		Times(1)
-	res, err := uc.LedgerRepo.Create(context.TODO(), ledger)
+	res, err := uc.LedgerRepository.Create(context.TODO(), ledger)
 
 	assert.Equal(t, ledger, res)
 	assert.Nil(t, err)
@@ -44,15 +44,15 @@ func TestCreateLedgerError(t *testing.T) {
 	}
 
 	uc := UseCase{
-		LedgerRepo: mock.NewMockRepository(gomock.NewController(t)),
+		LedgerRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.LedgerRepo.(*mock.MockRepository).
+	uc.LedgerRepository.(*mock.MockRepository).
 		EXPECT().
 		Create(gomock.Any(), ledger).
 		Return(nil, errors.New(errMSG)).
 		Times(1)
-	res, err := uc.LedgerRepo.Create(context.TODO(), ledger)
+	res, err := uc.LedgerRepository.Create(context.TODO(), ledger)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

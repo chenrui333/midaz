@@ -24,15 +24,15 @@ func TestGetProductByIDSuccess(t *testing.T) {
 	}
 
 	uc := UseCase{
-		ProductRepo: mock.NewMockRepository(gomock.NewController(t)),
+		ProductRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.ProductRepo.(*mock.MockRepository).
+	uc.ProductRepository.(*mock.MockRepository).
 		EXPECT().
 		Find(gomock.Any(), organizationID, ledgerID, id).
 		Return(product, nil).
 		Times(1)
-	res, err := uc.ProductRepo.Find(context.TODO(), organizationID, ledgerID, id)
+	res, err := uc.ProductRepository.Find(context.TODO(), organizationID, ledgerID, id)
 
 	assert.Equal(t, res, product)
 	assert.Nil(t, err)
@@ -46,15 +46,15 @@ func TestGetProductByIDError(t *testing.T) {
 	errMSG := "errDatabaseItemNotFound"
 
 	uc := UseCase{
-		ProductRepo: mock.NewMockRepository(gomock.NewController(t)),
+		ProductRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.ProductRepo.(*mock.MockRepository).
+	uc.ProductRepository.(*mock.MockRepository).
 		EXPECT().
 		Find(gomock.Any(), organizationID, ledgerID, id).
 		Return(nil, errors.New(errMSG)).
 		Times(1)
-	res, err := uc.ProductRepo.Find(context.TODO(), organizationID, ledgerID, id)
+	res, err := uc.ProductRepository.Find(context.TODO(), organizationID, ledgerID, id)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

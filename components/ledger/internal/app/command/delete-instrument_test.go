@@ -18,15 +18,15 @@ func TestDeleteInstrumentByIDSuccess(t *testing.T) {
 	organizationID := uuid.New()
 
 	uc := UseCase{
-		InstrumentRepo: mock.NewMockRepository(gomock.NewController(t)),
+		InstrumentRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.InstrumentRepo.(*mock.MockRepository).
+	uc.InstrumentRepository.(*mock.MockRepository).
 		EXPECT().
 		Delete(gomock.Any(), organizationID, ledgerID, id).
 		Return(nil).
 		Times(1)
-	err := uc.InstrumentRepo.Delete(context.TODO(), organizationID, ledgerID, id)
+	err := uc.InstrumentRepository.Delete(context.TODO(), organizationID, ledgerID, id)
 
 	assert.Nil(t, err)
 }
@@ -39,15 +39,15 @@ func TestDeleteInstrumentByIDError(t *testing.T) {
 	errMSG := "errDatabaseItemNotFound"
 
 	uc := UseCase{
-		InstrumentRepo: mock.NewMockRepository(gomock.NewController(t)),
+		InstrumentRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.InstrumentRepo.(*mock.MockRepository).
+	uc.InstrumentRepository.(*mock.MockRepository).
 		EXPECT().
 		Delete(gomock.Any(), organizationID, ledgerID, id).
 		Return(errors.New(errMSG)).
 		Times(1)
-	err := uc.InstrumentRepo.Delete(context.TODO(), organizationID, ledgerID, id)
+	err := uc.InstrumentRepository.Delete(context.TODO(), organizationID, ledgerID, id)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

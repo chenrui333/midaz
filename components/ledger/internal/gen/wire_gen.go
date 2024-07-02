@@ -46,22 +46,22 @@ func InitializeService() *service.Service {
 	mongoConnection := setupMongoDBConnection(config)
 	metadataMongoDBRepository := mongodb.NewMetadataMongoDBRepository(mongoConnection)
 	useCase := &command.UseCase{
-		OrganizationRepo: organizationPostgreSQLRepository,
-		LedgerRepo:       ledgerPostgreSQLRepository,
-		ProductRepo:      productPostgreSQLRepository,
-		PortfolioRepo:    portfolioPostgreSQLRepository,
-		AccountRepo:      accountPostgreSQLRepository,
-		InstrumentRepo:   instrumentPostgreSQLRepository,
-		MetadataRepo:     metadataMongoDBRepository,
+		OrganizationRepository: organizationPostgreSQLRepository,
+		LedgerRepository:       ledgerPostgreSQLRepository,
+		ProductRepository:      productPostgreSQLRepository,
+		PortfolioRepository:    portfolioPostgreSQLRepository,
+		AccountRepository:      accountPostgreSQLRepository,
+		InstrumentRepository:   instrumentPostgreSQLRepository,
+		MetadataRepository:     metadataMongoDBRepository,
 	}
 	queryUseCase := &query.UseCase{
-		OrganizationRepo: organizationPostgreSQLRepository,
-		LedgerRepo:       ledgerPostgreSQLRepository,
-		ProductRepo:      productPostgreSQLRepository,
-		PortfolioRepo:    portfolioPostgreSQLRepository,
-		AccountRepo:      accountPostgreSQLRepository,
-		InstrumentRepo:   instrumentPostgreSQLRepository,
-		MetadataRepo:     metadataMongoDBRepository,
+		OrganizationRepository: organizationPostgreSQLRepository,
+		LedgerRepository:       ledgerPostgreSQLRepository,
+		ProductRepository:      productPostgreSQLRepository,
+		PortfolioRepository:    portfolioPostgreSQLRepository,
+		AccountRepository:      accountPostgreSQLRepository,
+		InstrumentRepository:   instrumentPostgreSQLRepository,
+		MetadataRepository:     metadataMongoDBRepository,
 	}
 	accountHandler := &ports.AccountHandler{
 		Command: useCase,

@@ -12,24 +12,24 @@ import (
 
 // UseCase is a struct that aggregates various repositories for simplified access in use case implementations.
 type UseCase struct {
-	// OrganizationRepo provides an abstraction on top of the organization data source.
-	OrganizationRepo o.Repository
+	// OrganizationRepository provides an abstraction on top of the organization data source.
+	OrganizationRepository o.Repository
 
 	// LedgerRepo provides an abstraction on top of the ledger data source.
-	LedgerRepo l.Repository
+	LedgerRepository l.Repository
 
-	// ProductRepo provides an abstraction on top of the product data source.
-	ProductRepo r.Repository
+	// ProductRepository provides an abstraction on top of the product data source.
+	ProductRepository r.Repository
 
-	// PortfolioRepo provides an abstraction on top of the portfolio data source.
-	PortfolioRepo p.Repository
+	// PortfolioRepository provides an abstraction on top of the portfolio data source.
+	PortfolioRepository p.Repository
 
-	// AccountRepo provides an abstraction on top of the account data source.
-	AccountRepo a.Repository
+	// AccountRepository provides an abstraction on top of the account data source.
+	AccountRepository a.Repository
 
-	// InstrumentRepo provides an abstraction on top of the instrument data source.
-	InstrumentRepo i.Repository
+	// InstrumentRepository provides an abstraction on top of the instrument data source.
+	InstrumentRepository i.Repository
 
-	// MetadataRepo provides an abstraction on top of the metadata data source.
-	MetadataRepo m.Repository
+	// MetadataRepository provides an abstraction on top of the metadata data source.
+	MetadataRepository m.Repository
 }

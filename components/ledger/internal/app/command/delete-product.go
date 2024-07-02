@@ -18,7 +18,7 @@ func (uc *UseCase) DeleteProductByID(ctx context.Context, organizationID, ledger
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Remove product for id: %s", id)
 
-	if err := uc.ProductRepo.Delete(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(id)); err != nil {
+	if err := uc.ProductRepository.Delete(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(id)); err != nil {
 		logger.Errorf("Error deleting product on repo by id: %v", err)
 
 		if errors.Is(err, app.ErrDatabaseItemNotFound) {

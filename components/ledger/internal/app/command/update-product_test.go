@@ -26,15 +26,15 @@ func TestUpdateProductByIDSuccess(t *testing.T) {
 	}
 
 	uc := UseCase{
-		ProductRepo: mock.NewMockRepository(gomock.NewController(t)),
+		ProductRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.ProductRepo.(*mock.MockRepository).
+	uc.ProductRepository.(*mock.MockRepository).
 		EXPECT().
 		Update(gomock.Any(), organizationID, ledgerID, id, product).
 		Return(product, nil).
 		Times(1)
-	res, err := uc.ProductRepo.Update(context.TODO(), organizationID, ledgerID, id, product)
+	res, err := uc.ProductRepository.Update(context.TODO(), organizationID, ledgerID, id, product)
 
 	assert.Equal(t, product, res)
 	assert.Nil(t, err)
@@ -54,14 +54,14 @@ func TestUpdateProductByIDError(t *testing.T) {
 	}
 
 	uc := UseCase{
-		ProductRepo: mock.NewMockRepository(gomock.NewController(t)),
+		ProductRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.ProductRepo.(*mock.MockRepository).
+	uc.ProductRepository.(*mock.MockRepository).
 		EXPECT().
 		Update(gomock.Any(), organizationID, ledgerID, id, product).
 		Return(nil, errors.New(errMSG))
-	res, err := uc.ProductRepo.Update(context.TODO(), organizationID, ledgerID, id, product)
+	res, err := uc.ProductRepository.Update(context.TODO(), organizationID, ledgerID, id, product)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

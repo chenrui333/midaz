@@ -18,15 +18,15 @@ func TestDeleteAccountByIDSuccess(t *testing.T) {
 	portfolioID := uuid.New()
 	id := uuid.New()
 	uc := UseCase{
-		AccountRepo: mock.NewMockRepository(gomock.NewController(t)),
+		AccountRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.AccountRepo.(*mock.MockRepository).
+	uc.AccountRepository.(*mock.MockRepository).
 		EXPECT().
 		Delete(gomock.Any(), organizationID, ledgerID, portfolioID, id).
 		Return(nil).
 		Times(1)
-	err := uc.AccountRepo.Delete(context.TODO(), organizationID, ledgerID, portfolioID, id)
+	err := uc.AccountRepository.Delete(context.TODO(), organizationID, ledgerID, portfolioID, id)
 
 	assert.Nil(t, err)
 }
@@ -40,15 +40,15 @@ func TestDeleteAccountByIDError(t *testing.T) {
 	errMSG := "errDatabaseItemNotFound"
 
 	uc := UseCase{
-		AccountRepo: mock.NewMockRepository(gomock.NewController(t)),
+		AccountRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.AccountRepo.(*mock.MockRepository).
+	uc.AccountRepository.(*mock.MockRepository).
 		EXPECT().
 		Delete(gomock.Any(), organizationID, ledgerID, portfolioID, id).
 		Return(errors.New(errMSG)).
 		Times(1)
-	err := uc.AccountRepo.Delete(context.TODO(), organizationID, ledgerID, portfolioID, id)
+	err := uc.AccountRepository.Delete(context.TODO(), organizationID, ledgerID, portfolioID, id)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

@@ -18,15 +18,15 @@ func TestGetOrganizationByIDSuccess(t *testing.T) {
 	organization := &o.Organization{ID: id.String()}
 
 	uc := UseCase{
-		OrganizationRepo: mock.NewMockRepository(gomock.NewController(t)),
+		OrganizationRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.OrganizationRepo.(*mock.MockRepository).
+	uc.OrganizationRepository.(*mock.MockRepository).
 		EXPECT().
 		Find(gomock.Any(), id).
 		Return(organization, nil).
 		Times(1)
-	res, err := uc.OrganizationRepo.Find(context.TODO(), id)
+	res, err := uc.OrganizationRepository.Find(context.TODO(), id)
 
 	assert.Equal(t, res, organization)
 	assert.Nil(t, err)
@@ -38,15 +38,15 @@ func TestGetOrganizationByIDError(t *testing.T) {
 	errMSG := "errDatabaseItemNotFound"
 
 	uc := UseCase{
-		OrganizationRepo: mock.NewMockRepository(gomock.NewController(t)),
+		OrganizationRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.OrganizationRepo.(*mock.MockRepository).
+	uc.OrganizationRepository.(*mock.MockRepository).
 		EXPECT().
 		Find(gomock.Any(), id).
 		Return(nil, errors.New(errMSG)).
 		Times(1)
-	res, err := uc.OrganizationRepo.Find(context.TODO(), id)
+	res, err := uc.OrganizationRepository.Find(context.TODO(), id)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

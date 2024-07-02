@@ -19,16 +19,16 @@ func TestMetadataUpdateSuccess(t *testing.T) {
 	metadata := map[string]any{}
 	collection := reflect.TypeOf(o.Organization{}).Name()
 	uc := UseCase{
-		MetadataRepo: mock.NewMockRepository(gomock.NewController(t)),
+		MetadataRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.MetadataRepo.(*mock.MockRepository).
+	uc.MetadataRepository.(*mock.MockRepository).
 		EXPECT().
 		Update(gomock.Any(), collection, id, metadata).
 		Return(nil).
 		Times(1)
 
-	err := uc.MetadataRepo.Update(context.TODO(), collection, id, metadata)
+	err := uc.MetadataRepository.Update(context.TODO(), collection, id, metadata)
 	assert.Nil(t, err)
 }
 
@@ -39,16 +39,16 @@ func TestMetadataUpdateError(t *testing.T) {
 	metadata := map[string]any{}
 	collection := reflect.TypeOf(o.Organization{}).Name()
 	uc := UseCase{
-		MetadataRepo: mock.NewMockRepository(gomock.NewController(t)),
+		MetadataRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.MetadataRepo.(*mock.MockRepository).
+	uc.MetadataRepository.(*mock.MockRepository).
 		EXPECT().
 		Update(gomock.Any(), collection, id, metadata).
 		Return(errors.New(errMSG)).
 		Times(1)
 
-	err := uc.MetadataRepo.Update(context.TODO(), collection, id, metadata)
+	err := uc.MetadataRepository.Update(context.TODO(), collection, id, metadata)
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)
 }

@@ -18,7 +18,7 @@ func (uc *UseCase) DeleteLedgerByID(ctx context.Context, organizationID, id stri
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Remove ledger for id: %s", id)
 
-	if err := uc.LedgerRepo.Delete(ctx, uuid.MustParse(organizationID), uuid.MustParse(id)); err != nil {
+	if err := uc.LedgerRepository.Delete(ctx, uuid.MustParse(organizationID), uuid.MustParse(id)); err != nil {
 		logger.Errorf("Error deleting ledger on repo by id: %v", err)
 
 		if errors.Is(err, app.ErrDatabaseItemNotFound) {

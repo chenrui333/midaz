@@ -18,9 +18,6 @@ import (
 	http "github.com/LerianStudio/midaz/components/ledger/internal/ports"
 	ports "github.com/LerianStudio/midaz/components/ledger/internal/ports/in"
 
-	"github.com/LerianStudio/midaz/common/mauth"
-	"github.com/LerianStudio/midaz/common/mmongo"
-
 	"github.com/LerianStudio/midaz/common"
 	"github.com/LerianStudio/midaz/common/mpostgres"
 	"github.com/LerianStudio/midaz/common/mzap"
@@ -51,25 +48,24 @@ func setupPostgreSQLConnection(cfg *service.Config) *mpostgres.PostgresConnectio
 	}
 }
 
-func setupMongoDBConnection(cfg *service.Config) *mmongo.MongoConnection {
-	connStrSource := fmt.Sprintf("mongodb://%s:%s@%s:%s",
-		cfg.MongoDBUser, cfg.MongoDBPassword, cfg.MongoDBHost, cfg.MongoDBPort)
+// func setupMongoDBConnection(cfg *service.Config) *mmongo.MongoConnection {
+// 	connStrSource := fmt.Sprintf("mongodb://%s:%s@%s:%s",
+// 		cfg.MongoDBUser, cfg.MongoDBPassword, cfg.MongoDBHost, cfg.MongoDBPort)
 
-	return &mmongo.MongoConnection{
-		ConnectionStringSource: connStrSource,
-		Database:               cfg.MongoDBName,
-	}
-}
+// 	return &mmongo.MongoConnection{
+// 		ConnectionStringSource: connStrSource,
+// 		Database:               cfg.MongoDBName,
+// 	}
+// }
 
 var (
 	serviceSet = wire.NewSet(
 		common.InitLocalEnvConfig,
+		service.NewConfig,
 		mzap.InitializeLogger,
 		setupPostgreSQLConnection,
-		setupMongoDBConnection,
-		service.NewConfig,
+		// setupMongoDBConnection,
 		http.NewRouter,
-		mauth.NewAuthClient,
 		service.NewServer,
 		postgres.NewOrganizationPostgreSQLRepository,
 		postgres.NewLedgerPostgreSQLRepository,

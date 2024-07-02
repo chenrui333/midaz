@@ -22,15 +22,15 @@ func TestCreatePortfolioSuccess(t *testing.T) {
 	}
 
 	uc := UseCase{
-		PortfolioRepo: mock.NewMockRepository(gomock.NewController(t)),
+		PortfolioRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.PortfolioRepo.(*mock.MockRepository).
+	uc.PortfolioRepository.(*mock.MockRepository).
 		EXPECT().
 		Create(gomock.Any(), portfolio).
 		Return(portfolio, nil).
 		Times(1)
-	res, err := uc.PortfolioRepo.Create(context.TODO(), portfolio)
+	res, err := uc.PortfolioRepository.Create(context.TODO(), portfolio)
 
 	assert.Equal(t, portfolio, res)
 	assert.Nil(t, err)
@@ -47,15 +47,15 @@ func TestCreatePortfolioError(t *testing.T) {
 	}
 
 	uc := UseCase{
-		PortfolioRepo: mock.NewMockRepository(gomock.NewController(t)),
+		PortfolioRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.PortfolioRepo.(*mock.MockRepository).
+	uc.PortfolioRepository.(*mock.MockRepository).
 		EXPECT().
 		Create(gomock.Any(), portfolio).
 		Return(nil, errors.New(errMSG)).
 		Times(1)
-	res, err := uc.PortfolioRepo.Create(context.TODO(), portfolio)
+	res, err := uc.PortfolioRepository.Create(context.TODO(), portfolio)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

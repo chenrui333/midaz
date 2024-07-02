@@ -23,7 +23,7 @@ func (uc *UseCase) UpdatePortfolioByID(ctx context.Context, organizationID, ledg
 		Status: upi.Status,
 	}
 
-	portfolioUpdated, err := uc.PortfolioRepo.Update(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(id), portfolio)
+	portfolioUpdated, err := uc.PortfolioRepository.Update(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(id), portfolio)
 	if err != nil {
 		logger.Errorf("Error updating portfolio on repo by id: %v", err)
 
@@ -44,7 +44,7 @@ func (uc *UseCase) UpdatePortfolioByID(ctx context.Context, organizationID, ledg
 			return nil, err
 		}
 
-		if err := uc.MetadataRepo.Update(ctx, reflect.TypeOf(p.Portfolio{}).Name(), id, upi.Metadata); err != nil {
+		if err := uc.MetadataRepository.Update(ctx, reflect.TypeOf(p.Portfolio{}).Name(), id, upi.Metadata); err != nil {
 			return nil, err
 		}
 

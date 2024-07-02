@@ -18,7 +18,7 @@ func (uc *UseCase) GetAllMetadataLedgers(ctx context.Context, organizationID str
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Retrieving ledgers")
 
-	metadata, err := uc.MetadataRepo.FindList(ctx, reflect.TypeOf(l.Ledger{}).Name(), filter)
+	metadata, err := uc.MetadataRepository.FindList(ctx, reflect.TypeOf(l.Ledger{}).Name(), filter)
 	if err != nil || metadata == nil {
 		return nil, common.EntityNotFoundError{
 			EntityType: reflect.TypeOf(l.Ledger{}).Name(),
@@ -36,7 +36,7 @@ func (uc *UseCase) GetAllMetadataLedgers(ctx context.Context, organizationID str
 		metadataMap[meta.EntityID] = meta.Data
 	}
 
-	ledgers, err := uc.LedgerRepo.ListByIDs(ctx, uuid.MustParse(organizationID), uuids)
+	ledgers, err := uc.LedgerRepository.ListByIDs(ctx, uuid.MustParse(organizationID), uuids)
 	if err != nil {
 		logger.Errorf("Error getting ledgers on repo by query params: %v", err)
 

@@ -18,7 +18,7 @@ func (uc *UseCase) GetOrganizationByID(ctx context.Context, id string) (*o.Organ
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Retrieving organization for id: %s", id)
 
-	organization, err := uc.OrganizationRepo.Find(ctx, uuid.MustParse(id))
+	organization, err := uc.OrganizationRepository.Find(ctx, uuid.MustParse(id))
 	if err != nil {
 		logger.Errorf("Error getting organization on repo by id: %v", err)
 
@@ -35,7 +35,7 @@ func (uc *UseCase) GetOrganizationByID(ctx context.Context, id string) (*o.Organ
 	}
 
 	if organization != nil {
-		metadata, err := uc.MetadataRepo.FindByEntity(ctx, reflect.TypeOf(o.Organization{}).Name(), id)
+		metadata, err := uc.MetadataRepository.FindByEntity(ctx, reflect.TypeOf(o.Organization{}).Name(), id)
 		if err != nil {
 			logger.Errorf("Error get metadata on mongodb organization: %v", err)
 			return nil, err

@@ -27,15 +27,15 @@ func TestUpdatePortfolioByIDSuccess(t *testing.T) {
 	}
 
 	uc := UseCase{
-		PortfolioRepo: mock.NewMockRepository(gomock.NewController(t)),
+		PortfolioRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.PortfolioRepo.(*mock.MockRepository).
+	uc.PortfolioRepository.(*mock.MockRepository).
 		EXPECT().
 		Update(gomock.Any(), organizationID, ledgerID, id, portfolio).
 		Return(portfolio, nil).
 		Times(1)
-	res, err := uc.PortfolioRepo.Update(context.TODO(), organizationID, ledgerID, id, portfolio)
+	res, err := uc.PortfolioRepository.Update(context.TODO(), organizationID, ledgerID, id, portfolio)
 
 	assert.Equal(t, portfolio, res)
 	assert.Nil(t, err)
@@ -56,14 +56,14 @@ func TestUpdatePortfolioByIDError(t *testing.T) {
 	}
 
 	uc := UseCase{
-		PortfolioRepo: mock.NewMockRepository(gomock.NewController(t)),
+		PortfolioRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.PortfolioRepo.(*mock.MockRepository).
+	uc.PortfolioRepository.(*mock.MockRepository).
 		EXPECT().
 		Update(gomock.Any(), organizationID, ledgerID, id, portfolio).
 		Return(nil, errors.New(errMSG))
-	res, err := uc.PortfolioRepo.Update(context.TODO(), organizationID, ledgerID, id, portfolio)
+	res, err := uc.PortfolioRepository.Update(context.TODO(), organizationID, ledgerID, id, portfolio)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)

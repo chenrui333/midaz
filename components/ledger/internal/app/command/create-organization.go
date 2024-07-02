@@ -44,7 +44,7 @@ func (uc *UseCase) CreateOrganization(ctx context.Context, coi *o.CreateOrganiza
 		UpdatedAt:            time.Now(),
 	}
 
-	org, err := uc.OrganizationRepo.Create(ctx, organization)
+	org, err := uc.OrganizationRepository.Create(ctx, organization)
 	if err != nil {
 		logger.Errorf("Error creating organization: %v", err)
 		return nil, err
@@ -63,7 +63,7 @@ func (uc *UseCase) CreateOrganization(ctx context.Context, coi *o.CreateOrganiza
 			UpdatedAt:  organization.UpdatedAt,
 		}
 
-		if err := uc.MetadataRepo.Create(ctx, reflect.TypeOf(o.Organization{}).Name(), &meta); err != nil {
+		if err := uc.MetadataRepository.Create(ctx, reflect.TypeOf(o.Organization{}).Name(), &meta); err != nil {
 			logger.Errorf("Error into creating organization metadata: %v", err)
 			return nil, err
 		}

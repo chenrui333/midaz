@@ -18,7 +18,7 @@ func (uc *UseCase) GetAllAccount(ctx context.Context, organizationID, ledgerID, 
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Retrieving accounts")
 
-	accounts, err := uc.AccountRepo.FindAll(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(portfolioID), filter.Limit, filter.Page)
+	accounts, err := uc.AccountRepository.FindAll(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(portfolioID), filter.Limit, filter.Page)
 	if err != nil {
 		logger.Errorf("Error getting accounts on repo: %v", err)
 
@@ -35,7 +35,7 @@ func (uc *UseCase) GetAllAccount(ctx context.Context, organizationID, ledgerID, 
 	}
 
 	if accounts != nil {
-		metadata, err := uc.MetadataRepo.FindList(ctx, reflect.TypeOf(a.Account{}).Name(), filter)
+		metadata, err := uc.MetadataRepository.FindList(ctx, reflect.TypeOf(a.Account{}).Name(), filter)
 		if err != nil {
 			return nil, common.EntityNotFoundError{
 				EntityType: reflect.TypeOf(a.Account{}).Name(),

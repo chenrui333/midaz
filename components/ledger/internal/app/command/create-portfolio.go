@@ -39,7 +39,7 @@ func (uc *UseCase) CreatePortfolio(ctx context.Context, organizationID, ledgerID
 		UpdatedAt:      time.Now(),
 	}
 
-	port, err := uc.PortfolioRepo.Create(ctx, portfolio)
+	port, err := uc.PortfolioRepository.Create(ctx, portfolio)
 	if err != nil {
 		logger.Errorf("Error creating portfolio: %v", err)
 		return nil, err
@@ -57,7 +57,7 @@ func (uc *UseCase) CreatePortfolio(ctx context.Context, organizationID, ledgerID
 			CreatedAt:  time.Now(),
 			UpdatedAt:  time.Now(),
 		}
-		if err := uc.MetadataRepo.Create(ctx, reflect.TypeOf(p.Portfolio{}).Name(), &meta); err != nil {
+		if err := uc.MetadataRepository.Create(ctx, reflect.TypeOf(p.Portfolio{}).Name(), &meta); err != nil {
 			logger.Errorf("Error into creating portfolio metadata: %v", err)
 			return nil, err
 		}

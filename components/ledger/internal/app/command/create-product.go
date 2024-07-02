@@ -36,12 +36,12 @@ func (uc *UseCase) CreateProduct(ctx context.Context, organizationID, ledgerID s
 		UpdatedAt:      time.Now(),
 	}
 
-	_, err := uc.ProductRepo.FindByName(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), cpi.Name)
+	_, err := uc.ProductRepository.FindByName(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), cpi.Name)
 	if err != nil {
 		return nil, err
 	}
 
-	prod, err := uc.ProductRepo.Create(ctx, product)
+	prod, err := uc.ProductRepository.Create(ctx, product)
 	if err != nil {
 		logger.Errorf("Error creating product: %v", err)
 		return nil, err
@@ -59,7 +59,7 @@ func (uc *UseCase) CreateProduct(ctx context.Context, organizationID, ledgerID s
 			CreatedAt:  time.Now(),
 			UpdatedAt:  time.Now(),
 		}
-		if err := uc.MetadataRepo.Create(ctx, reflect.TypeOf(r.Product{}).Name(), &meta); err != nil {
+		if err := uc.MetadataRepository.Create(ctx, reflect.TypeOf(r.Product{}).Name(), &meta); err != nil {
 			logger.Errorf("Error into creating product metadata: %v", err)
 			return nil, err
 		}

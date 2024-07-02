@@ -18,7 +18,7 @@ func (uc *UseCase) GetAllMetadataOrganizations(ctx context.Context, filter commo
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Retrieving organizations")
 
-	metadata, err := uc.MetadataRepo.FindList(ctx, reflect.TypeOf(o.Organization{}).Name(), filter)
+	metadata, err := uc.MetadataRepository.FindList(ctx, reflect.TypeOf(o.Organization{}).Name(), filter)
 	if err != nil || metadata == nil {
 		return nil, common.EntityNotFoundError{
 			EntityType: reflect.TypeOf(o.Organization{}).Name(),
@@ -36,7 +36,7 @@ func (uc *UseCase) GetAllMetadataOrganizations(ctx context.Context, filter commo
 		metadataMap[meta.EntityID] = meta.Data
 	}
 
-	organizations, err := uc.OrganizationRepo.ListByIDs(ctx, uuids)
+	organizations, err := uc.OrganizationRepository.ListByIDs(ctx, uuids)
 	if err != nil {
 		logger.Errorf("Error getting organizations on repo by query params: %v", err)
 

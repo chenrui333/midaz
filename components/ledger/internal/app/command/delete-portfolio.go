@@ -18,7 +18,7 @@ func (uc *UseCase) DeletePortfolioByID(ctx context.Context, organizationID, ledg
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Remove portfolio for id: %s", id)
 
-	if err := uc.PortfolioRepo.Delete(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(id)); err != nil {
+	if err := uc.PortfolioRepository.Delete(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(id)); err != nil {
 		logger.Errorf("Error deleting portfolio on repo by id: %v", err)
 
 		if errors.Is(err, app.ErrDatabaseItemNotFound) {

@@ -18,7 +18,7 @@ func (uc *UseCase) GetInstrumentByID(ctx context.Context, organizationID, ledger
 	logger := mlog.NewLoggerFromContext(ctx)
 	logger.Infof("Retrieving instrument for id: %s", id)
 
-	instrument, err := uc.InstrumentRepo.Find(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(id))
+	instrument, err := uc.InstrumentRepository.Find(ctx, uuid.MustParse(organizationID), uuid.MustParse(ledgerID), uuid.MustParse(id))
 	if err != nil {
 		logger.Errorf("Error getting instrument on repo by id: %v", err)
 
@@ -35,7 +35,7 @@ func (uc *UseCase) GetInstrumentByID(ctx context.Context, organizationID, ledger
 	}
 
 	if instrument != nil {
-		metadata, err := uc.MetadataRepo.FindByEntity(ctx, reflect.TypeOf(i.Instrument{}).Name(), id)
+		metadata, err := uc.MetadataRepository.FindByEntity(ctx, reflect.TypeOf(i.Instrument{}).Name(), id)
 		if err != nil {
 			logger.Errorf("Error get metadata on mongodb instrument: %v", err)
 			return nil, err

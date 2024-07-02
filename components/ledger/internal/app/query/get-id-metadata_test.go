@@ -21,16 +21,16 @@ func TestMetadataFindByEntitySuccess(t *testing.T) {
 	collection := reflect.TypeOf(o.Organization{}).Name()
 	metadata := &meta.Metadata{ID: primitive.NewObjectID()}
 	uc := UseCase{
-		MetadataRepo: mock.NewMockRepository(gomock.NewController(t)),
+		MetadataRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.MetadataRepo.(*mock.MockRepository).
+	uc.MetadataRepository.(*mock.MockRepository).
 		EXPECT().
 		FindByEntity(gomock.Any(), collection, id).
 		Return(metadata, nil).
 		Times(1)
 
-	res, err := uc.MetadataRepo.FindByEntity(context.TODO(), collection, id)
+	res, err := uc.MetadataRepository.FindByEntity(context.TODO(), collection, id)
 
 	assert.Equal(t, res, metadata)
 	assert.Nil(t, err)
@@ -42,15 +42,15 @@ func TestMetadataFindByEntityError(t *testing.T) {
 	id := uuid.New().String()
 	collection := reflect.TypeOf(o.Organization{}).Name()
 	uc := UseCase{
-		MetadataRepo: mock.NewMockRepository(gomock.NewController(t)),
+		MetadataRepository: mock.NewMockRepository(gomock.NewController(t)),
 	}
 
-	uc.MetadataRepo.(*mock.MockRepository).
+	uc.MetadataRepository.(*mock.MockRepository).
 		EXPECT().
 		FindByEntity(gomock.Any(), collection, id).
 		Return(nil, errors.New(errMSG)).
 		Times(1)
-	res, err := uc.MetadataRepo.FindByEntity(context.TODO(), collection, id)
+	res, err := uc.MetadataRepository.FindByEntity(context.TODO(), collection, id)
 
 	assert.NotEmpty(t, err)
 	assert.Equal(t, err.Error(), errMSG)
