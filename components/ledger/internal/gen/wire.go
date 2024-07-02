@@ -19,6 +19,7 @@ import (
 	ports "github.com/LerianStudio/midaz/components/ledger/internal/ports/in"
 
 	"github.com/LerianStudio/midaz/common"
+	"github.com/LerianStudio/midaz/common/mmongo"
 	"github.com/LerianStudio/midaz/common/mpostgres"
 	"github.com/LerianStudio/midaz/common/mzap"
 	"github.com/LerianStudio/midaz/components/ledger/internal/app/command"
@@ -48,15 +49,15 @@ func setupPostgreSQLConnection(cfg *service.Config) *mpostgres.PostgresConnectio
 	}
 }
 
-// func setupMongoDBConnection(cfg *service.Config) *mmongo.MongoConnection {
-// 	connStrSource := fmt.Sprintf("mongodb://%s:%s@%s:%s",
-// 		cfg.MongoDBUser, cfg.MongoDBPassword, cfg.MongoDBHost, cfg.MongoDBPort)
+func setupMongoDBConnection(cfg *service.Config) *mmongo.MongoConnection {
+	connStrSource := fmt.Sprintf("mongodb://%s:%s@%s:%s",
+		cfg.MongoDBUser, cfg.MongoDBPassword, cfg.MongoDBHost, cfg.MongoDBPort)
 
-// 	return &mmongo.MongoConnection{
-// 		ConnectionStringSource: connStrSource,
-// 		Database:               cfg.MongoDBName,
-// 	}
-// }
+	return &mmongo.MongoConnection{
+		ConnectionStringSource: connStrSource,
+		Database:               cfg.MongoDBName,
+	}
+}
 
 var (
 	serviceSet = wire.NewSet(
