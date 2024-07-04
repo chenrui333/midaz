@@ -28,7 +28,6 @@ type Config struct {
 	AuthRealm         string `env:"AUTH_REALM"`
 	AuthEndpoint      string `env:"AUTH_ENDPOINT"`
 	AuthClientID      string `env:"AUTH_CLIENT_ID"`
-	AuthClientSecret  string `env:"AUTH_CLIENT_SECRET"`
 }
 
 // NewConfig creates a instance of Config.

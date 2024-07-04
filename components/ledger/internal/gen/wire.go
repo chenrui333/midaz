@@ -19,6 +19,7 @@ import (
 	ports "github.com/LerianStudio/midaz/components/ledger/internal/ports/in"
 
 	"github.com/LerianStudio/midaz/common"
+	mauth "github.com/LerianStudio/midaz/common/mauth"
 	"github.com/LerianStudio/midaz/common/mmongo"
 	"github.com/LerianStudio/midaz/common/mpostgres"
 	"github.com/LerianStudio/midaz/common/mzap"
@@ -59,13 +60,21 @@ func setupMongoDBConnection(cfg *service.Config) *mmongo.MongoConnection {
 	}
 }
 
+func setupAuthClient(cfg *service.Config) *mauth.AuthClient {
+	return &mauth.AuthClient{
+		AuthEndpoint: cfg.AuthEndpoint,
+		AuthClientID: cfg.AuthClientID,
+	}
+}
+
 var (
 	serviceSet = wire.NewSet(
 		common.InitLocalEnvConfig,
 		service.NewConfig,
 		mzap.InitializeLogger,
+		setupAuthClient,
 		setupPostgreSQLConnection,
-		// setupMongoDBConnection,
+		setupMongoDBConnection,
 		http.NewRouter,
 		service.NewServer,
 		postgres.NewOrganizationPostgreSQLRepository,

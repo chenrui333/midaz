@@ -1,6 +1,7 @@
 package http
 
 import (
+	mauth "github.com/LerianStudio/midaz/common/mauth"
 	lib "github.com/LerianStudio/midaz/common/net/http"
 	l "github.com/LerianStudio/midaz/components/ledger/internal/domain/onboarding/ledger"
 	o "github.com/LerianStudio/midaz/components/ledger/internal/domain/onboarding/organization"
@@ -15,7 +16,7 @@ import (
 )
 
 // NewRouter registers routes to the Server.
-func NewRouter(ah *ports.AccountHandler, ph *ports.PortfolioHandler, lh *ports.LedgerHandler, ih *ports.InstrumentHandler, oh *ports.OrganizationHandler, rh *ports.ProductHandler) *fiber.App {
+func NewRouter(ah *ports.AccountHandler, ph *ports.PortfolioHandler, lh *ports.LedgerHandler, ih *ports.InstrumentHandler, oh *ports.OrganizationHandler, rh *ports.ProductHandler, ac *mauth.AuthClient) *fiber.App {
 	f := fiber.New()
 
 	_ = service.NewConfig()
@@ -23,13 +24,13 @@ func NewRouter(ah *ports.AccountHandler, ph *ports.PortfolioHandler, lh *ports.L
 	f.Use(cors.New())
 	f.Use(lib.WithCorrelationID())
 
-	// -- Middleware --
-	// lib.NewAuthnMiddleware(f, mauth.NewAuthClient())
+	// -- Auth Middleware --
+	lib.NewAuthnMiddleware(f, ac)
 
 	// -- Routes --
 
 	// Organizations
-	f.Post("/v1/organizations", lib.WithScope([]string{"organization:create"}), lib.WithBody(new(o.CreateOrganizationInput), oh.CreateOrganization))
+	f.Post("/v1/organizations", lib.WithScope("organization:create"), lib.WithBody(new(o.CreateOrganizationInput), oh.CreateOrganization))
 	f.Patch("/v1/organizations/:id", lib.WithBody(new(o.UpdateOrganizationInput), oh.UpdateOrganization))
 	f.Get("/v1/organizations", oh.GetAllOrganizations)
 	f.Get("/v1/organizations/:id", oh.GetOrganizationByID)

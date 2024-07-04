@@ -91,6 +91,7 @@ require (
 	github.com/TylerBrock/colorjson v0.0.0-20200706003622-8a50f05110d2
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/bxcodec/dbresolver/v2 v2.2.0
+	github.com/coreos/go-oidc v2.2.1+incompatible
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-migrate/migrate/v4 v4.17.1

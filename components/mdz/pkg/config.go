@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// FileFlag represents the flag used to specify the configuration file path.
 type persistedConfig struct {
 	CurrentProfile string              `json:"currentProfile"`
 	Profiles       map[string]*Profile `json:"profiles"`
