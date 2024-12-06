@@ -640,7 +640,7 @@ func TestOperateAmounts(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := OperateAmounts(tt.amount, tt.balance, tt.operation)
+			result, _ := OperateAmounts(tt.amount, tt.balance, tt.operation)
 			if result.Available != tt.expected.Available || result.Scale != tt.expected.Scale || result.OnHold != tt.expected.OnHold {
 				t.Errorf("Expected result %+v, got %+v", tt.expected, result)
 			}
