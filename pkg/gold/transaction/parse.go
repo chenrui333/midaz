@@ -82,7 +82,7 @@ func (v *TransactionVisitor) VisitDescription(ctx *parser.DescriptionContext) an
 	return strings.Trim(ctx.STRING().GetText(), "\"")
 }
 
-func (v *TransactionVisitor) VisitVisitChartOfAccounts(ctx *parser.ChartOfAccountsContext) any {
+func (v *TransactionVisitor) VisitChartOfAccounts(ctx *parser.ChartOfAccountsContext) any {
 	return ctx.UUID().GetText()
 }
 
@@ -226,6 +226,11 @@ func (v *TransactionVisitor) VisitFrom(ctx *parser.FromContext) any {
 		description = v.VisitDescription(ctx.Description().(*parser.DescriptionContext)).(string)
 	}
 
+	var chartOfAccounts string
+	if ctx.ChartOfAccounts() != nil {
+		chartOfAccounts = v.VisitChartOfAccounts(ctx.ChartOfAccounts().(*parser.ChartOfAccountsContext)).(string)
+	}
+
 	var metadata map[string]any
 	if ctx.Metadata() != nil {
 		metadata = v.VisitMetadata(ctx.Metadata().(*parser.MetadataContext)).(map[string]any)
@@ -259,14 +264,15 @@ func (v *TransactionVisitor) VisitFrom(ctx *parser.FromContext) any {
 	}
 
 	return model.FromTo{
-		Account:     account,
-		Amount:      &amount,
-		Share:       &share,
-		Remaining:   remaining,
-		Rate:        rate,
-		Description: description,
-		Metadata:    metadata,
-		IsFrom:      true,
+		Account:         account,
+		Amount:          &amount,
+		Share:           &share,
+		Remaining:       remaining,
+		Rate:            rate,
+		Description:     description,
+		ChartOfAccounts: chartOfAccounts,
+		Metadata:        metadata,
+		IsFrom:          true,
 	}
 }
 
@@ -278,6 +284,11 @@ func (v *TransactionVisitor) VisitTo(ctx *parser.ToContext) any {
 		description = v.VisitDescription(ctx.Description().(*parser.DescriptionContext)).(string)
 	}
 
+	var chartOfAccounts string
+	if ctx.ChartOfAccounts() != nil {
+		chartOfAccounts = v.VisitChartOfAccounts(ctx.ChartOfAccounts().(*parser.ChartOfAccountsContext)).(string)
+	}
+
 	var metadata map[string]any
 	if ctx.Metadata() != nil {
 		metadata = v.VisitMetadata(ctx.Metadata().(*parser.MetadataContext)).(map[string]any)
@@ -311,14 +322,15 @@ func (v *TransactionVisitor) VisitTo(ctx *parser.ToContext) any {
 	}
 
 	return model.FromTo{
-		Account:     account,
-		Amount:      &amount,
-		Share:       &share,
-		Remaining:   remaining,
-		Rate:        rate,
-		Description: description,
-		Metadata:    metadata,
-		IsFrom:      false,
+		Account:         account,
+		Amount:          &amount,
+		Share:           &share,
+		Remaining:       remaining,
+		Rate:            rate,
+		Description:     description,
+		ChartOfAccounts: chartOfAccounts,
+		Metadata:        metadata,
+		IsFrom:          false,
 	}
 }
 
