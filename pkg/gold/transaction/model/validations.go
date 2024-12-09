@@ -17,9 +17,8 @@ func ValidateAccounts(validate Responses, accounts []*a.Account) error {
 	}
 
 	for _, acc := range accounts {
-		for key := range validate.From {
-			// TODO: Temporary validation to be removed when multi-asset transaction is implemented.
-			if (acc.Id == key || acc.Alias == key) && acc.AssetCode != cn.DefaultAssetCode {
+		for key, value := range validate.From {
+			if (acc.Id == key || acc.Alias == key) && acc.AssetCode != value.Asset {
 				return pkg.ValidateBusinessError(cn.ErrAssetCodeNotFound, "ValidateAccounts")
 			}
 
@@ -29,9 +28,8 @@ func ValidateAccounts(validate Responses, accounts []*a.Account) error {
 			}
 		}
 
-		for key := range validate.To {
-			// TODO: Temporary validation to be removed when multi-asset transaction is implemented.
-			if (acc.Id == key || acc.Alias == key) && acc.AssetCode != cn.DefaultAssetCode {
+		for key, value := range validate.To {
+			if (acc.Id == key || acc.Alias == key) && acc.AssetCode != value.Asset {
 				return pkg.ValidateBusinessError(cn.ErrAssetCodeNotFound, "ValidateAccounts")
 			}
 
