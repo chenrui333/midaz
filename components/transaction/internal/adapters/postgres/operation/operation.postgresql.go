@@ -3,6 +3,7 @@ package operation
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"reflect"
 	"strconv"
@@ -82,7 +83,7 @@ func (r *OperationPostgreSQLRepository) Create(ctx context.Context, operation *O
 		return nil, err
 	}
 
-	result, err := db.ExecContext(ctx, `INSERT INTO operation VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24) RETURNING *`,
+	result, err := db.ExecContext(ctx, `INSERT INTO operation VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25) RETURNING *`,
 		record.ID,
 		record.TransactionID,
 		record.Description,
@@ -104,6 +105,7 @@ func (r *OperationPostgreSQLRepository) Create(ctx context.Context, operation *O
 		record.ChartOfAccounts,
 		record.OrganizationID,
 		record.LedgerID,
+		record.Rate,
 		record.CreatedAt,
 		record.UpdatedAt,
 		record.DeletedAt,
@@ -181,6 +183,8 @@ func (r *OperationPostgreSQLRepository) FindAll(ctx context.Context, organizatio
 	spanQuery.End()
 
 	for rows.Next() {
+		var rate string
+
 		var operation OperationPostgreSQLModel
 		if err := rows.Scan(
 			&operation.ID,
@@ -204,11 +208,19 @@ func (r *OperationPostgreSQLRepository) FindAll(ctx context.Context, organizatio
 			&operation.ChartOfAccounts,
 			&operation.OrganizationID,
 			&operation.LedgerID,
+			&rate,
 			&operation.CreatedAt,
 			&operation.UpdatedAt,
 			&operation.DeletedAt,
 		); err != nil {
 			mopentelemetry.HandleSpanError(&span, "Failed to scan row", err)
+
+			return nil, err
+		}
+
+		err = json.Unmarshal([]byte(rate), &operation.Rate)
+		if err != nil {
+			mopentelemetry.HandleSpanError(&span, "Failed to unmarshal rate", err)
 
 			return nil, err
 		}
@@ -255,6 +267,8 @@ func (r *OperationPostgreSQLRepository) ListByIDs(ctx context.Context, organizat
 	spanQuery.End()
 
 	for rows.Next() {
+		var rate string
+
 		var operation OperationPostgreSQLModel
 		if err := rows.Scan(
 			&operation.ID,
@@ -278,11 +292,19 @@ func (r *OperationPostgreSQLRepository) ListByIDs(ctx context.Context, organizat
 			&operation.ChartOfAccounts,
 			&operation.OrganizationID,
 			&operation.LedgerID,
+			&rate,
 			&operation.CreatedAt,
 			&operation.UpdatedAt,
 			&operation.DeletedAt,
 		); err != nil {
 			mopentelemetry.HandleSpanError(&span, "Failed to scan row", err)
+
+			return nil, err
+		}
+
+		err = json.Unmarshal([]byte(rate), &operation.Rate)
+		if err != nil {
+			mopentelemetry.HandleSpanError(&span, "Failed to unmarshal rate", err)
 
 			return nil, err
 		}
@@ -322,6 +344,8 @@ func (r *OperationPostgreSQLRepository) Find(ctx context.Context, organizationID
 
 	spanQuery.End()
 
+	var rate string
+
 	if err := row.Scan(
 		&operation.ID,
 		&operation.TransactionID,
@@ -344,6 +368,7 @@ func (r *OperationPostgreSQLRepository) Find(ctx context.Context, organizationID
 		&operation.ChartOfAccounts,
 		&operation.OrganizationID,
 		&operation.LedgerID,
+		&rate,
 		&operation.CreatedAt,
 		&operation.UpdatedAt,
 		&operation.DeletedAt,
@@ -353,6 +378,13 @@ func (r *OperationPostgreSQLRepository) Find(ctx context.Context, organizationID
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, pkg.ValidateBusinessError(constant.ErrEntityNotFound, reflect.TypeOf(Operation{}).Name())
 		}
+
+		return nil, err
+	}
+
+	err = json.Unmarshal([]byte(rate), &operation.Rate)
+	if err != nil {
+		mopentelemetry.HandleSpanError(&span, "Failed to unmarshal rate", err)
 
 		return nil, err
 	}
@@ -383,6 +415,8 @@ func (r *OperationPostgreSQLRepository) FindByAccount(ctx context.Context, organ
 
 	spanQuery.End()
 
+	var rate string
+
 	if err := row.Scan(
 		&operation.ID,
 		&operation.TransactionID,
@@ -405,6 +439,7 @@ func (r *OperationPostgreSQLRepository) FindByAccount(ctx context.Context, organ
 		&operation.ChartOfAccounts,
 		&operation.OrganizationID,
 		&operation.LedgerID,
+		&rate,
 		&operation.CreatedAt,
 		&operation.UpdatedAt,
 		&operation.DeletedAt,
@@ -414,6 +449,13 @@ func (r *OperationPostgreSQLRepository) FindByAccount(ctx context.Context, organ
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, pkg.ValidateBusinessError(constant.ErrEntityNotFound, reflect.TypeOf(Operation{}).Name())
 		}
+
+		return nil, err
+	}
+
+	err = json.Unmarshal([]byte(rate), &operation.Rate)
+	if err != nil {
+		mopentelemetry.HandleSpanError(&span, "Failed to unmarshal rate", err)
 
 		return nil, err
 	}
@@ -444,6 +486,8 @@ func (r *OperationPostgreSQLRepository) FindByPortfolio(ctx context.Context, org
 
 	spanQuery.End()
 
+	var rate string
+
 	if err := row.Scan(
 		&operation.ID,
 		&operation.TransactionID,
@@ -466,6 +510,7 @@ func (r *OperationPostgreSQLRepository) FindByPortfolio(ctx context.Context, org
 		&operation.ChartOfAccounts,
 		&operation.OrganizationID,
 		&operation.LedgerID,
+		&rate,
 		&operation.CreatedAt,
 		&operation.UpdatedAt,
 		&operation.DeletedAt,
@@ -475,6 +520,13 @@ func (r *OperationPostgreSQLRepository) FindByPortfolio(ctx context.Context, org
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, pkg.ValidateBusinessError(constant.ErrEntityNotFound, reflect.TypeOf(Operation{}).Name())
 		}
+
+		return nil, err
+	}
+
+	err = json.Unmarshal([]byte(rate), &operation.Rate)
+	if err != nil {
+		mopentelemetry.HandleSpanError(&span, "Failed to unmarshal rate", err)
 
 		return nil, err
 	}
@@ -648,6 +700,8 @@ func (r *OperationPostgreSQLRepository) FindAllByAccount(ctx context.Context, or
 	spanQuery.End()
 
 	for rows.Next() {
+		var rate string
+
 		var operation OperationPostgreSQLModel
 		if err := rows.Scan(
 			&operation.ID,
@@ -671,11 +725,19 @@ func (r *OperationPostgreSQLRepository) FindAllByAccount(ctx context.Context, or
 			&operation.ChartOfAccounts,
 			&operation.OrganizationID,
 			&operation.LedgerID,
+			&rate,
 			&operation.CreatedAt,
 			&operation.UpdatedAt,
 			&operation.DeletedAt,
 		); err != nil {
 			mopentelemetry.HandleSpanError(&span, "Failed to scan row", err)
+
+			return nil, err
+		}
+
+		err = json.Unmarshal([]byte(rate), &operation.Rate)
+		if err != nil {
+			mopentelemetry.HandleSpanError(&span, "Failed to unmarshal rate", err)
 
 			return nil, err
 		}
@@ -739,6 +801,8 @@ func (r *OperationPostgreSQLRepository) FindAllByPortfolio(ctx context.Context, 
 	spanQuery.End()
 
 	for rows.Next() {
+		var rate string
+
 		var operation OperationPostgreSQLModel
 		if err := rows.Scan(
 			&operation.ID,
@@ -762,11 +826,19 @@ func (r *OperationPostgreSQLRepository) FindAllByPortfolio(ctx context.Context, 
 			&operation.ChartOfAccounts,
 			&operation.OrganizationID,
 			&operation.LedgerID,
+			&rate,
 			&operation.CreatedAt,
 			&operation.UpdatedAt,
 			&operation.DeletedAt,
 		); err != nil {
 			mopentelemetry.HandleSpanError(&span, "Failed to scan row", err)
+
+			return nil, err
+		}
+
+		err = json.Unmarshal([]byte(rate), &operation.Rate)
+		if err != nil {
+			mopentelemetry.HandleSpanError(&span, "Failed to unmarshal rate", err)
 
 			return nil, err
 		}
