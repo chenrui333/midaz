@@ -169,12 +169,32 @@ func (cti *CreateTransactionInput) FromDSl() *goldModel.Transaction {
 	if cti.Send != nil {
 		for i := range cti.Send.Source.From {
 			cti.Send.Source.From[i].IsFrom = true
+
+			if !cti.Send.Source.From[i].Rate.IsEmpty() {
+				cti.Send.Source.From[i].Metadata["from"] = cti.Send.Source.From[i].Rate.From
+				cti.Send.Source.From[i].Metadata["to"] = cti.Send.Source.From[i].Rate.To
+				cti.Send.Source.From[i].Metadata["scale"] = cti.Send.Source.From[i].Rate.Scale
+				cti.Send.Source.From[i].Metadata["value"] = cti.Send.Source.From[i].Rate.Value
+				cti.Send.Source.From[i].Metadata["external_id"] = cti.Send.Source.From[i].Rate.ExternalID
+			}
 		}
 
 		dsl.Send = *cti.Send
 	}
 
 	if cti.Distribute != nil {
+		for i := range cti.Distribute.To {
+			cti.Distribute.To[i].IsFrom = false
+
+			if !cti.Distribute.To[i].Rate.IsEmpty() {
+				cti.Distribute.To[i].Metadata["from"] = cti.Distribute.To[i].Rate.From
+				cti.Distribute.To[i].Metadata["to"] = cti.Distribute.To[i].Rate.To
+				cti.Distribute.To[i].Metadata["scale"] = cti.Distribute.To[i].Rate.Scale
+				cti.Distribute.To[i].Metadata["value"] = cti.Distribute.To[i].Rate.Value
+				cti.Distribute.To[i].Metadata["external_id"] = cti.Distribute.To[i].Rate.ExternalID
+			}
+		}
+
 		dsl.Distribute = *cti.Distribute
 	}
 

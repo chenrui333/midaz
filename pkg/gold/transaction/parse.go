@@ -260,6 +260,12 @@ func (v *TransactionVisitor) VisitFrom(ctx *parser.FromContext) any {
 
 		if !rateValue.IsEmpty() {
 			rate = &rateValue
+
+			metadata["from"] = rate.From
+			metadata["to"] = rate.To
+			metadata["scale"] = rate.Scale
+			metadata["value"] = rate.Value
+			metadata["external_id"] = rate.ExternalID
 		}
 	}
 
@@ -318,6 +324,12 @@ func (v *TransactionVisitor) VisitTo(ctx *parser.ToContext) any {
 
 		if !rateValue.IsEmpty() {
 			rate = &rateValue
+
+			metadata["from"] = rate.From
+			metadata["to"] = rate.To
+			metadata["scale"] = rate.Scale
+			metadata["value"] = rate.Value
+			metadata["external_id"] = rate.ExternalID
 		}
 	}
 
