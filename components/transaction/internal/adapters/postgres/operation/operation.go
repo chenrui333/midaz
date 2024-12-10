@@ -2,6 +2,7 @@ package operation
 
 import (
 	"database/sql"
+	"github.com/LerianStudio/midaz/pkg/gold/transaction/model"
 	"time"
 
 	"github.com/LerianStudio/midaz/pkg"
@@ -30,6 +31,7 @@ type OperationPostgreSQLModel struct {
 	ChartOfAccounts       string
 	OrganizationID        string
 	LedgerID              string
+	Rate                  *model.Rate
 	CreatedAt             time.Time
 	UpdatedAt             time.Time
 	DeletedAt             sql.NullTime
@@ -99,6 +101,7 @@ type Operation struct {
 	PortfolioID     *string        `json:"portfolioId" example:"00000000-0000-0000-0000-000000000000"`
 	OrganizationID  string         `json:"organizationId" example:"00000000-0000-0000-0000-000000000000"`
 	LedgerID        string         `json:"ledgerId" example:"00000000-0000-0000-0000-000000000000"`
+	Rate            *model.Rate    `json:"rate"`
 	CreatedAt       time.Time      `json:"createdAt" example:"2021-01-01T00:00:00Z"`
 	UpdatedAt       time.Time      `json:"updatedAt" example:"2021-01-01T00:00:00Z"`
 	DeletedAt       *time.Time     `json:"deletedAt" example:"2021-01-01T00:00:00Z"`
@@ -145,6 +148,7 @@ func (t *OperationPostgreSQLModel) ToEntity() *Operation {
 		LedgerID:        t.LedgerID,
 		OrganizationID:  t.OrganizationID,
 		PortfolioID:     t.PortfolioID,
+		Rate:            t.Rate,
 		CreatedAt:       t.CreatedAt,
 		UpdatedAt:       t.UpdatedAt,
 		DeletedAt:       nil,
@@ -182,6 +186,7 @@ func (t *OperationPostgreSQLModel) FromEntity(operation *Operation) {
 		PortfolioID:           operation.PortfolioID,
 		LedgerID:              operation.LedgerID,
 		OrganizationID:        operation.OrganizationID,
+		Rate:                  operation.Rate,
 		CreatedAt:             operation.CreatedAt,
 		UpdatedAt:             operation.UpdatedAt,
 	}

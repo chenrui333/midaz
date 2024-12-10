@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS operation (
     chart_of_accounts                  TEXT NOT NULL,
     organization_id                    UUID NOT NULL,
     ledger_id                          UUID NOT NULL,
+    rate                               JSONB NULL,
     created_at                         TIMESTAMP WITH TIME ZONE,
     updated_at                         TIMESTAMP WITH TIME ZONE,
     deleted_at                         TIMESTAMP WITH TIME ZONE,
