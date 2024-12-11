@@ -12,6 +12,10 @@ import (
 
 // ValidateAccounts function with some validates in accounts and DSL operations
 func ValidateAccounts(validate Responses, accounts []*a.Account) error {
+	if len(accounts) != (len(validate.From) + len(validate.To)) {
+		return pkg.ValidateBusinessError(constant.ErrAccountIneligibility, "ValidateAccounts")
+	}
+
 	for _, acc := range accounts {
 		for key := range validate.From {
 			if acc.Id == key || acc.Alias == key {
@@ -283,7 +287,7 @@ func calculateTotal(fromTos []FromTo, send Send, t chan int, ft chan map[string]
 			fmto[fromTos[i].Account] = amount
 		}
 
-		if !pkg.IsNilOrEmpty(&fromTos[i].Remaining) {
+		if !pkg.IsNilOrEmpty(fromTos[i].Remaining) {
 			total.Value += remaining.Value
 
 			fmto[fromTos[i].Account] = remaining
@@ -307,6 +311,7 @@ func calculateTotal(fromTos []FromTo, send Send, t chan int, ft chan map[string]
 func ValidateSendSourceAndDistribute(transaction Transaction) (*Responses, error) {
 	response := &Responses{
 		Total:        transaction.Send.Value,
+		Asset:        transaction.Send.Asset,
 		From:         make(map[string]Amount),
 		To:           make(map[string]Amount),
 		Sources:      make([]string, 0),

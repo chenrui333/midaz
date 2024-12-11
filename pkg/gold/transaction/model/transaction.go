@@ -12,6 +12,7 @@ type Balance struct {
 
 type Responses struct {
 	Total        int
+	Asset        string
 	From         map[string]Amount
 	To           map[string]Amount
 	Sources      []string
@@ -38,6 +39,11 @@ type Amount struct {
 	Scale int    `json:"scale,omitempty" validate:"gte=0" example:"2"`
 } // @name Amount
 
+// IsEmpty method that set empty or nil in fields
+func (a Amount) IsEmpty() bool {
+	return a.Value == 0 && a.Scale == 0
+}
+
 // Share structure for marshaling/unmarshalling JSON.
 //
 // swagger:model Share
@@ -46,6 +52,11 @@ type Share struct {
 	Percentage             int `json:"percentage,omitempty" validate:"required"`
 	PercentageOfPercentage int `json:"percentageOfPercentage,omitempty"`
 } // @name Share
+
+// IsEmpty method that set empty or nil in fields
+func (s Share) IsEmpty() bool {
+	return s.Percentage == 0 || (s.Percentage == 0 && s.PercentageOfPercentage == 0)
+}
 
 // Send structure for marshaling/unmarshalling JSON.
 //
@@ -63,7 +74,7 @@ type Send struct {
 // swagger:model Source
 // @Description Source is the struct designed to represent the source fields of an operation.
 type Source struct {
-	Remaining string   `json:"remaining,omitempty" example:"remaining"`
+	Remaining *string  `json:"remaining,omitempty" example:"remaining"`
 	From      []FromTo `json:"from,omitempty" validate:"singletransactiontype,required,dive"`
 } // @name Source
 
@@ -92,7 +103,7 @@ type FromTo struct {
 	Account         string         `json:"account,omitempty" example:"@person1"`
 	Amount          *Amount        `json:"amount,omitempty"`
 	Share           *Share         `json:"share,omitempty"`
-	Remaining       string         `json:"remaining,omitempty" example:"remaining"`
+	Remaining       *string        `json:"remaining,omitempty" example:"remaining"`
 	Rate            *Rate          `json:"rate,omitempty"`
 	Description     string         `json:"description,omitempty" example:"description"`
 	ChartOfAccounts string         `json:"chartOfAccounts" example:"1000"`
@@ -105,7 +116,7 @@ type FromTo struct {
 // swagger:model Distribute
 // @Description Distribute is the struct designed to represent the distribution fields of an operation.
 type Distribute struct {
-	Remaining string   `json:"remaining,omitempty"`
+	Remaining *string  `json:"remaining,omitempty"`
 	To        []FromTo `json:"to,omitempty" validate:"singletransactiontype,required,dive"`
 } // @name Distribute
 

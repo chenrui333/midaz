@@ -358,7 +358,7 @@ func validateSingleTransactionType(fl validator.FieldLevel) bool {
 			count++
 		}
 
-		if f.Remaining != "" {
+		if f.Remaining != nil {
 			count++
 		}
 

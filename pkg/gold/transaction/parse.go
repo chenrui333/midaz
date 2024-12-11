@@ -130,9 +130,12 @@ func (v *TransactionVisitor) VisitSend(ctx *parser.SendContext) any {
 }
 
 func (v *TransactionVisitor) VisitSource(ctx *parser.SourceContext) any {
-	var remaining string
+	var remaining *string
 	if ctx.REMAINING() != nil {
-		remaining = strings.Trim(ctx.REMAINING().GetText(), ":")
+		r := strings.Trim(ctx.REMAINING().GetText(), ":")
+		if r != "" {
+			remaining = &r
+		}
 	}
 
 	froms := make([]model.FromTo, 0, len(ctx.AllFrom()))
@@ -236,21 +239,33 @@ func (v *TransactionVisitor) VisitFrom(ctx *parser.FromContext) any {
 		metadata = v.VisitMetadata(ctx.Metadata().(*parser.MetadataContext)).(map[string]any)
 	}
 
-	var amount model.Amount
+	var amount *model.Amount
 
-	var share model.Share
+	var share *model.Share
 
-	var remaining string
+	var remaining *string
 
 	switch ctx.SendTypes().(type) {
 	case *parser.AmountContext:
-		amount = v.VisitAmount(ctx.SendTypes().(*parser.AmountContext)).(model.Amount)
+		visitAmount := v.VisitAmount(ctx.SendTypes().(*parser.AmountContext)).(model.Amount)
+		if !visitAmount.IsEmpty() {
+			amount = &visitAmount
+		}
 	case *parser.ShareIntContext:
-		share = v.VisitShareInt(ctx.SendTypes().(*parser.ShareIntContext)).(model.Share)
+		visitShare := v.VisitShareInt(ctx.SendTypes().(*parser.ShareIntContext)).(model.Share)
+		if !visitShare.IsEmpty() {
+			share = &visitShare
+		}
 	case *parser.ShareIntOfIntContext:
-		share = v.VisitShareIntOfInt(ctx.SendTypes().(*parser.ShareIntOfIntContext)).(model.Share)
+		visitShare := v.VisitShareIntOfInt(ctx.SendTypes().(*parser.ShareIntOfIntContext)).(model.Share)
+		if !visitShare.IsEmpty() {
+			share = &visitShare
+		}
 	default:
-		remaining = v.VisitRemaining(ctx.SendTypes().(*parser.RemainingContext)).(string)
+		visitRemaining := v.VisitRemaining(ctx.SendTypes().(*parser.RemainingContext)).(string)
+		if visitRemaining != "" {
+			remaining = &visitRemaining
+		}
 	}
 
 	var rate *model.Rate
@@ -265,8 +280,8 @@ func (v *TransactionVisitor) VisitFrom(ctx *parser.FromContext) any {
 
 	return model.FromTo{
 		Account:         account,
-		Amount:          &amount,
-		Share:           &share,
+		Amount:          amount,
+		Share:           share,
 		Remaining:       remaining,
 		Rate:            rate,
 		Description:     description,
@@ -294,21 +309,33 @@ func (v *TransactionVisitor) VisitTo(ctx *parser.ToContext) any {
 		metadata = v.VisitMetadata(ctx.Metadata().(*parser.MetadataContext)).(map[string]any)
 	}
 
-	var amount model.Amount
+	var amount *model.Amount
 
-	var share model.Share
+	var share *model.Share
 
-	var remaining string
+	var remaining *string
 
 	switch ctx.SendTypes().(type) {
 	case *parser.AmountContext:
-		amount = v.VisitAmount(ctx.SendTypes().(*parser.AmountContext)).(model.Amount)
+		visitAmount := v.VisitAmount(ctx.SendTypes().(*parser.AmountContext)).(model.Amount)
+		if !visitAmount.IsEmpty() {
+			amount = &visitAmount
+		}
 	case *parser.ShareIntContext:
-		share = v.VisitShareInt(ctx.SendTypes().(*parser.ShareIntContext)).(model.Share)
+		visitShare := v.VisitShareInt(ctx.SendTypes().(*parser.ShareIntContext)).(model.Share)
+		if !visitShare.IsEmpty() {
+			share = &visitShare
+		}
 	case *parser.ShareIntOfIntContext:
-		share = v.VisitShareIntOfInt(ctx.SendTypes().(*parser.ShareIntOfIntContext)).(model.Share)
+		visitShare := v.VisitShareIntOfInt(ctx.SendTypes().(*parser.ShareIntOfIntContext)).(model.Share)
+		if !visitShare.IsEmpty() {
+			share = &visitShare
+		}
 	default:
-		remaining = v.VisitRemaining(ctx.SendTypes().(*parser.RemainingContext)).(string)
+		visitRemaining := v.VisitRemaining(ctx.SendTypes().(*parser.RemainingContext)).(string)
+		if visitRemaining != "" {
+			remaining = &visitRemaining
+		}
 	}
 
 	var rate *model.Rate
@@ -323,8 +350,8 @@ func (v *TransactionVisitor) VisitTo(ctx *parser.ToContext) any {
 
 	return model.FromTo{
 		Account:         account,
-		Amount:          &amount,
-		Share:           &share,
+		Amount:          amount,
+		Share:           share,
 		Remaining:       remaining,
 		Rate:            rate,
 		Description:     description,
@@ -335,9 +362,12 @@ func (v *TransactionVisitor) VisitTo(ctx *parser.ToContext) any {
 }
 
 func (v *TransactionVisitor) VisitDistribute(ctx *parser.DistributeContext) any {
-	var remaining string
+	var remaining *string
 	if ctx.REMAINING() != nil {
-		remaining = strings.Trim(ctx.REMAINING().GetText(), ":")
+		r := strings.Trim(ctx.REMAINING().GetText(), ":")
+		if r != "" {
+			remaining = &r
+		}
 	}
 
 	tos := make([]model.FromTo, 0, len(ctx.AllTo()))
