@@ -175,10 +175,9 @@ func (r *OperationPostgreSQLRepository) FindAll(ctx context.Context, organizatio
 		Where(squirrel.Eq{"deleted_at": nil}).
 		Where(squirrel.GtOrEq{"created_at": pkg.NormalizeDate(filter.StartDate, mpointers.Int(-1))}).
 		Where(squirrel.LtOrEq{"created_at": pkg.NormalizeDate(filter.EndDate, mpointers.Int(1))}).
-		Limit(pkg.SafeIntToUint64(filter.Limit)).
 		PlaceholderFormat(squirrel.Dollar)
 
-	findAll = http.ApplyCursorPagination(findAll, decodedCursor, orderDirection)
+	findAll, orderDirection = http.ApplyCursorPagination(findAll, decodedCursor, orderDirection, filter.Limit)
 
 	query, args, err := findAll.ToSql()
 	if err != nil {
@@ -253,7 +252,7 @@ func (r *OperationPostgreSQLRepository) FindAll(ctx context.Context, organizatio
 
 	hasPagination := len(operations) > filter.Limit
 
-	operations = http.PaginateRecords(isFirstPage, hasPagination, decodedCursor.PointsNext, operations, filter.Limit)
+	operations = http.PaginateRecords(isFirstPage, hasPagination, decodedCursor.PointsNext, operations, filter.Limit, orderDirection)
 
 	cur, err := http.CalculateCursor(isFirstPage, hasPagination, decodedCursor.PointsNext, operations[0].ID, operations[len(operations)-1].ID)
 	if err != nil {
@@ -718,10 +717,9 @@ func (r *OperationPostgreSQLRepository) FindAllByAccount(ctx context.Context, or
 		Where(squirrel.Eq{"deleted_at": nil}).
 		Where(squirrel.GtOrEq{"created_at": pkg.NormalizeDate(filter.StartDate, mpointers.Int(-1))}).
 		Where(squirrel.LtOrEq{"created_at": pkg.NormalizeDate(filter.EndDate, mpointers.Int(2))}).
-		Limit(pkg.SafeIntToUint64(filter.Limit)).
 		PlaceholderFormat(squirrel.Dollar)
 
-	findAll = http.ApplyCursorPagination(findAll, decodedCursor, orderDirection)
+	findAll, orderDirection = http.ApplyCursorPagination(findAll, decodedCursor, orderDirection, filter.Limit)
 
 	query, args, err := findAll.ToSql()
 	if err != nil {
@@ -796,7 +794,7 @@ func (r *OperationPostgreSQLRepository) FindAllByAccount(ctx context.Context, or
 
 	hasPagination := len(operations) > filter.Limit
 
-	operations = http.PaginateRecords(isFirstPage, hasPagination, decodedCursor.PointsNext, operations, filter.Limit)
+	operations = http.PaginateRecords(isFirstPage, hasPagination, decodedCursor.PointsNext, operations, filter.Limit, orderDirection)
 
 	cur, err := http.CalculateCursor(isFirstPage, hasPagination, decodedCursor.PointsNext, operations[0].ID, operations[len(operations)-1].ID)
 	if err != nil {
@@ -845,10 +843,9 @@ func (r *OperationPostgreSQLRepository) FindAllByPortfolio(ctx context.Context, 
 		Where(squirrel.Eq{"deleted_at": nil}).
 		Where(squirrel.GtOrEq{"created_at": pkg.NormalizeDate(filter.StartDate, mpointers.Int(-1))}).
 		Where(squirrel.LtOrEq{"created_at": pkg.NormalizeDate(filter.EndDate, mpointers.Int(1))}).
-		Limit(pkg.SafeIntToUint64(filter.Limit)).
 		PlaceholderFormat(squirrel.Dollar)
 
-	findAll = http.ApplyCursorPagination(findAll, decodedCursor, orderDirection)
+	findAll, orderDirection = http.ApplyCursorPagination(findAll, decodedCursor, orderDirection, filter.Limit)
 
 	query, args, err := findAll.ToSql()
 	if err != nil {
@@ -923,7 +920,7 @@ func (r *OperationPostgreSQLRepository) FindAllByPortfolio(ctx context.Context, 
 
 	hasPagination := len(operations) > filter.Limit
 
-	operations = http.PaginateRecords(isFirstPage, hasPagination, decodedCursor.PointsNext, operations, filter.Limit)
+	operations = http.PaginateRecords(isFirstPage, hasPagination, decodedCursor.PointsNext, operations, filter.Limit, orderDirection)
 
 	cur, err := http.CalculateCursor(isFirstPage, hasPagination, decodedCursor.PointsNext, operations[0].ID, operations[len(operations)-1].ID)
 	if err != nil {
