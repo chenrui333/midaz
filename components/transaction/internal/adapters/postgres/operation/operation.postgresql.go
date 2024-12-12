@@ -239,7 +239,7 @@ func (r *OperationPostgreSQLRepository) FindAll(ctx context.Context, organizatio
 		if err != nil {
 			mopentelemetry.HandleSpanError(&span, "Failed to unmarshal rate", err)
 
-			return nil, err
+			return nil, http.CursorPagination{}, err
 		}
 
 		operations = append(operations, operation.ToEntity())
@@ -782,7 +782,7 @@ func (r *OperationPostgreSQLRepository) FindAllByAccount(ctx context.Context, or
 		if err != nil {
 			mopentelemetry.HandleSpanError(&span, "Failed to unmarshal rate", err)
 
-			return nil, err
+			return nil, http.CursorPagination{}, err
 		}
 
 		operations = append(operations, operation.ToEntity())
@@ -909,7 +909,7 @@ func (r *OperationPostgreSQLRepository) FindAllByPortfolio(ctx context.Context, 
 		if err != nil {
 			mopentelemetry.HandleSpanError(&span, "Failed to unmarshal rate", err)
 
-			return nil, err
+			return nil, http.CursorPagination{}, err
 		}
 
 		operations = append(operations, operation.ToEntity())
