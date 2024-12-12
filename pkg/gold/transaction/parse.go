@@ -130,14 +130,6 @@ func (v *TransactionVisitor) VisitSend(ctx *parser.SendContext) any {
 }
 
 func (v *TransactionVisitor) VisitSource(ctx *parser.SourceContext) any {
-	var remaining *string
-	if ctx.REMAINING() != nil {
-		r := strings.Trim(ctx.REMAINING().GetText(), ":")
-		if r != "" {
-			remaining = &r
-		}
-	}
-
 	froms := make([]model.FromTo, 0, len(ctx.AllFrom()))
 
 	for _, from := range ctx.AllFrom() {
@@ -146,8 +138,7 @@ func (v *TransactionVisitor) VisitSource(ctx *parser.SourceContext) any {
 	}
 
 	return model.Source{
-		Remaining: remaining,
-		From:      froms,
+		From: froms,
 	}
 }
 
@@ -268,22 +259,11 @@ func (v *TransactionVisitor) VisitFrom(ctx *parser.FromContext) any {
 		}
 	}
 
-	var rate *model.Rate
-
-	if ctx.Rate() != nil {
-		rateValue := v.VisitRate(ctx.Rate().(*parser.RateContext)).(model.Rate)
-
-		if !rateValue.IsEmpty() {
-			rate = &rateValue
-		}
-	}
-
 	return model.FromTo{
 		Account:         account,
 		Amount:          amount,
 		Share:           share,
 		Remaining:       remaining,
-		Rate:            rate,
 		Description:     description,
 		ChartOfAccounts: chartOfAccounts,
 		Metadata:        metadata,
@@ -338,6 +318,26 @@ func (v *TransactionVisitor) VisitTo(ctx *parser.ToContext) any {
 		}
 	}
 
+	return model.FromTo{
+		Account:         account,
+		Amount:          amount,
+		Share:           share,
+		Remaining:       remaining,
+		Description:     description,
+		ChartOfAccounts: chartOfAccounts,
+		Metadata:        metadata,
+		IsFrom:          false,
+	}
+}
+
+func (v *TransactionVisitor) VisitDistribute(ctx *parser.DistributeContext) any {
+	tos := make([]model.FromTo, 0, len(ctx.AllTo()))
+
+	for _, to := range ctx.AllTo() {
+		t := v.VisitTo(to.(*parser.ToContext)).(model.FromTo)
+		tos = append(tos, t)
+	}
+
 	var rate *model.Rate
 
 	if ctx.Rate() != nil {
@@ -348,38 +348,9 @@ func (v *TransactionVisitor) VisitTo(ctx *parser.ToContext) any {
 		}
 	}
 
-	return model.FromTo{
-		Account:         account,
-		Amount:          amount,
-		Share:           share,
-		Remaining:       remaining,
-		Rate:            rate,
-		Description:     description,
-		ChartOfAccounts: chartOfAccounts,
-		Metadata:        metadata,
-		IsFrom:          false,
-	}
-}
-
-func (v *TransactionVisitor) VisitDistribute(ctx *parser.DistributeContext) any {
-	var remaining *string
-	if ctx.REMAINING() != nil {
-		r := strings.Trim(ctx.REMAINING().GetText(), ":")
-		if r != "" {
-			remaining = &r
-		}
-	}
-
-	tos := make([]model.FromTo, 0, len(ctx.AllTo()))
-
-	for _, to := range ctx.AllTo() {
-		t := v.VisitTo(to.(*parser.ToContext)).(model.FromTo)
-		tos = append(tos, t)
-	}
-
 	return model.Distribute{
-		Remaining: remaining,
-		To:        tos,
+		Rate: rate,
+		To:   tos,
 	}
 }
 

@@ -54,9 +54,9 @@ account: VARIABLE
 
 rate: '(' 'rate' UUID UUID '->' UUID valueOrVariable '|' valueOrVariable ')';
 
-from: '(' 'from' account sendTypes rate? description? chartOfAccounts? metadata? ')';
-source: '(' 'source' REMAINING? from+ ')';
+from: '(' 'from' account sendTypes description? chartOfAccounts? metadata? ')';
+source: '(' 'source' from+ ')';
 send: '(' 'send' UUID valueOrVariable '|' valueOrVariable source ')';
 
-to: '(' 'to' account sendTypes rate? description? chartOfAccounts? metadata? ')';
-distribute: '(' 'distribute' REMAINING? to+ ')';
+to: '(' 'to' account sendTypes description? chartOfAccounts? metadata? ')';
+distribute: '(' 'distribute' rate? to+ ')';

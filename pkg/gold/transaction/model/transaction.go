@@ -74,8 +74,7 @@ type Send struct {
 // swagger:model Source
 // @Description Source is the struct designed to represent the source fields of an operation.
 type Source struct {
-	Remaining *string  `json:"remaining,omitempty" example:"remaining"`
-	From      []FromTo `json:"from,omitempty" validate:"singletransactiontype,required,dive"`
+	From []FromTo `json:"from,omitempty" validate:"singletransactiontype,required,dive"`
 } // @name Source
 
 // Rate structure for marshaling/unmarshalling JSON.
@@ -104,7 +103,6 @@ type FromTo struct {
 	Amount          *Amount        `json:"amount,omitempty"`
 	Share           *Share         `json:"share,omitempty"`
 	Remaining       *string        `json:"remaining,omitempty" example:"remaining"`
-	Rate            *Rate          `json:"rate,omitempty"`
 	Description     string         `json:"description,omitempty" example:"description"`
 	ChartOfAccounts string         `json:"chartOfAccounts" example:"1000"`
 	Metadata        map[string]any `json:"metadata,omitempty" validate:"dive,keys,keymax=100,endkeys,nonested,valuemax=2000"`
@@ -116,8 +114,8 @@ type FromTo struct {
 // swagger:model Distribute
 // @Description Distribute is the struct designed to represent the distribution fields of an operation.
 type Distribute struct {
-	Remaining *string  `json:"remaining,omitempty"`
-	To        []FromTo `json:"to,omitempty" validate:"singletransactiontype,required,dive"`
+	Rate *Rate    `json:"rate,omitempty"`
+	To   []FromTo `json:"to,omitempty" validate:"singletransactiontype,required,dive"`
 } // @name Distribute
 
 // Transaction structure for marshaling/unmarshalling JSON.

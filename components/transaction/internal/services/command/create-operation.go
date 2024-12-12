@@ -94,7 +94,7 @@ func (uc *UseCase) CreateOperation(ctx context.Context, accounts []*account.Acco
 					PortfolioID:     &acc.PortfolioId,
 					OrganizationID:  acc.OrganizationId,
 					LedgerID:        acc.LedgerId,
-					Rate:            fromTo[i].Rate,
+					Rate:            dsl.Distribute.Rate,
 					CreatedAt:       time.Now(),
 					UpdatedAt:       time.Now(),
 				}
