@@ -10,33 +10,76 @@ import (
 	a "github.com/LerianStudio/midaz/pkg/mgrpc/account"
 )
 
+// GetListAccounts this func collects all the account identifiers from the Source.From and Distribute.To fields of the transaction.
+func GetListAccounts(transaction Transaction) *Responses {
+	flatTransaction := &Responses{
+		Total:         transaction.Send.Value,
+		Asset:         transaction.Send.Asset,
+		Rates:         make(map[string]Rate),
+		From:          make(map[string]Amount),
+		To:            make(map[string]Amount),
+		Sources:       make([]string, 0),
+		Destinations:  make([]string, 0),
+		AliasesAssets: make(map[string]string),
+	}
+
+	for i := range transaction.Send.Source.From {
+		flatTransaction.Sources = append(flatTransaction.Sources, transaction.Send.Source.From[i].Account)
+	}
+
+	for i := range transaction.Distribute.To {
+		flatTransaction.Destinations = append(flatTransaction.Destinations, transaction.Distribute.To[i].Account)
+	}
+
+	return flatTransaction
+}
+
 // ValidateAccounts function with some validates in accounts and DSL operations
-func ValidateAccounts(validate Responses, accounts []*a.Account) error {
-	if len(accounts) != (len(validate.From) + len(validate.To)) {
-		return pkg.ValidateBusinessError(constant.ErrAccountIneligibility, "ValidateAccounts")
+func ValidateAccounts(transaction Transaction, accounts []*a.Account) (map[string]string, error) {
+	aliasesWithAssets := map[string]string{}
+	assets := map[string]string{}
+
+	if len(accounts) != (len(transaction.Send.Source.From) + len(transaction.Distribute.To)) {
+		return nil, pkg.ValidateBusinessError(constant.ErrAccountIneligibility, "ValidateAccounts")
 	}
 
 	for _, acc := range accounts {
-		for key := range validate.From {
-			if acc.Id == key || acc.Alias == key {
+		for i := range transaction.Send.Source.From {
+			if acc.Id == transaction.Send.Source.From[i].Account || acc.Alias == transaction.Send.Source.From[i].Account {
 				if !acc.AllowSending {
-					return pkg.ValidateBusinessError(constant.ErrAccountStatusTransactionRestriction, "ValidateAccounts")
+					return nil, pkg.ValidateBusinessError(constant.ErrAccountStatusTransactionRestriction, "ValidateAccounts")
 				}
 
-				if acc.Balance.Available <= 0 && acc.Type != constant.DefaultExternalAccountType {
-					return pkg.ValidateBusinessError(constant.ErrInsufficientFunds, "ValidateAccounts", acc.Alias)
+				if acc.AssetCode != transaction.Send.Asset {
+					return nil, pkg.ValidateBusinessError(constant.ErrAccountStatusTransactionRestriction, "ValidateAccounts")
 				}
+
+				assets[acc.AssetCode] = acc.AssetCode
+
+				aliasesWithAssets[acc.Alias] = acc.AssetCode
 			}
 		}
 
-		for key := range validate.To {
-			if acc.Id == key || acc.Alias == key && !acc.AllowReceiving {
-				return pkg.ValidateBusinessError(constant.ErrAccountStatusTransactionRestriction, "ValidateAccounts")
+		for i := range transaction.Distribute.To {
+			if acc.Id == transaction.Distribute.To[i].Account || acc.Alias == transaction.Distribute.To[i].Account && !acc.AllowReceiving {
+				return nil, pkg.ValidateBusinessError(constant.ErrAccountStatusTransactionRestriction, "ValidateAccounts")
 			}
+
+			if acc.AssetCode != transaction.Send.Asset && acc.Type == constant.DefaultExternalAccountType {
+				return nil, pkg.ValidateBusinessError(constant.ErrAccountStatusTransactionRestriction, "ValidateAccounts")
+			}
+
+			assets[acc.AssetCode] = acc.AssetCode
+
+			aliasesWithAssets[acc.Alias] = acc.AssetCode
 		}
 	}
 
-	return nil
+	if len(assets) > 2 {
+		return nil, pkg.ValidateBusinessError(constant.ErrAccountIneligibility, "ValidateAccounts")
+	}
+
+	return aliasesWithAssets, nil
 }
 
 // ValidateFromToOperation func that validate operate balance amount
@@ -244,9 +287,8 @@ func OperateAmounts(amount Amount, balance *a.Balance, operation string) (Balanc
 }
 
 // calculateTotal Calculate total for sources/destinations based on shares, amounts and remains
-func calculateTotal(fromTos []FromTo, send Send, t chan int, ft chan map[string]Amount, sd chan []string) {
+func calculateTotal(fromTos []FromTo, send Send, t chan int, ft chan map[string]Amount) {
 	fmto := make(map[string]Amount)
-	scdt := make([]string, 0)
 
 	total := Amount{
 		Asset: send.Asset,
@@ -262,14 +304,7 @@ func calculateTotal(fromTos []FromTo, send Send, t chan int, ft chan map[string]
 
 	for i := range fromTos {
 		if fromTos[i].Share != nil && fromTos[i].Share.Percentage != 0 {
-			percentage := fromTos[i].Share.Percentage
-
-			percentageOfPercentage := fromTos[i].Share.PercentageOfPercentage
-			if percentageOfPercentage == 0 {
-				percentageOfPercentage = 100
-			}
-
-			shareValue := float64(send.Value) * (float64(percentage) / float64(percentageOfPercentage))
+			shareValue := float64(send.Value) * (float64(fromTos[i].Share.Percentage) / float64(fromTos[i].Share.PercentageOfPercentage))
 			amount := FindScale(send.Asset, shareValue, send.Scale)
 
 			normalize(&total, &amount, &remaining)
@@ -293,8 +328,6 @@ func calculateTotal(fromTos []FromTo, send Send, t chan int, ft chan map[string]
 			fmto[fromTos[i].Account] = remaining
 			fromTos[i].Amount = &remaining
 		}
-
-		scdt = append(scdt, fromTos[i].Account)
 	}
 
 	ttl := total.Value
@@ -304,48 +337,68 @@ func calculateTotal(fromTos []FromTo, send Send, t chan int, ft chan map[string]
 
 	t <- ttl
 	ft <- fmto
-	sd <- scdt
 }
 
 // ValidateSendSourceAndDistribute Validate send and distribute totals
-func ValidateSendSourceAndDistribute(transaction Transaction) (*Responses, error) {
-	response := &Responses{
-		Total:        transaction.Send.Value,
-		Asset:        transaction.Send.Asset,
-		From:         make(map[string]Amount),
-		To:           make(map[string]Amount),
-		Sources:      make([]string, 0),
-		Destinations: make([]string, 0),
-		Aliases:      make([]string, 0),
-	}
-
+func ValidateSendSourceAndDistribute(transaction Transaction, flatTransaction *Responses) (*Responses, error) {
 	var sourcesTotal int
+	total := make(chan int)
+	fromTo := make(chan map[string]Amount)
+	go calculateTotal(transaction.Send.Source.From, transaction.Send, total, fromTo)
+	sourcesTotal = <-total
+	flatTransaction.From = <-fromTo
 
 	var destinationsTotal int
+	go calculateTotal(transaction.Distribute.To, transaction.Send, total, fromTo)
+	destinationsTotal = <-total
+	flatTransaction.To = <-fromTo
 
-	t := make(chan int)
-	ft := make(chan map[string]Amount)
-	sd := make(chan []string)
-
-	go calculateTotal(transaction.Send.Source.From, transaction.Send, t, ft, sd)
-	sourcesTotal = <-t
-	response.From = <-ft
-	response.Sources = <-sd
-	response.Aliases = append(response.Aliases, response.Sources...)
-
-	go calculateTotal(transaction.Distribute.To, transaction.Send, t, ft, sd)
-	destinationsTotal = <-t
-	response.To = <-ft
-	response.Destinations = <-sd
-	response.Aliases = append(response.Aliases, response.Destinations...)
-
-	if math.Abs(float64(response.Total)-float64(sourcesTotal)) != 0 {
+	if math.Abs(float64(flatTransaction.Total)-float64(sourcesTotal)) != 0 {
 		return nil, pkg.ValidateBusinessError(constant.ErrTransactionValueMismatch, "ValidateSendSourceAndDistribute")
+	}
+
+	if flatTransaction.Rates != nil {
+		destinationsTotal = 0
+		externalValue := 0
+		for key, value := range flatTransaction.AliasesAssets {
+			if !flatTransaction.Rates[value].IsEmpty() && !flatTransaction.To[key].IsEmpty() && flatTransaction.To[key].Asset != flatTransaction.Rates[value].To {
+				to := flatTransaction.To[key]
+				to.Asset = flatTransaction.Rates[value].To
+				to.Value = (to.Value * flatTransaction.Rates[value].Value) / 100
+				flatTransaction.To[key] = to
+				externalValue = externalValue + to.Value
+				destinationsTotal = destinationsTotal + (to.Value / (flatTransaction.Rates[value].Value / 100))
+				flatTransaction.To[constant.DefaultExternalAccountAliasPrefix+to.Asset] = Amount{
+					Asset: to.Asset,
+					Scale: to.Scale,
+					Value: externalValue,
+				}
+			} else if !flatTransaction.To[key].IsEmpty() {
+				to := flatTransaction.To[key]
+				if to.Asset == flatTransaction.Asset {
+					sourcesTotal = sourcesTotal - to.Value
+					flatTransaction.From[constant.DefaultExternalAccountAliasPrefix+flatTransaction.Asset] = Amount{
+						Asset: flatTransaction.Asset,
+						Scale: to.Scale,
+						Value: sourcesTotal,
+					}
+				} else {
+					destinationsTotal = destinationsTotal + (to.Value / (flatTransaction.Rates[value].Value / 100))
+					externalValue = externalValue + to.Value
+					flatTransaction.To[constant.DefaultExternalAccountAliasPrefix+to.Asset] = Amount{
+						Asset: to.Asset,
+						Scale: to.Scale,
+						Value: externalValue,
+					}
+				}
+			}
+
+		}
 	}
 
 	if math.Abs(float64(sourcesTotal)-float64(destinationsTotal)) != 0 {
 		return nil, pkg.ValidateBusinessError(constant.ErrTransactionValueMismatch, "ValidateSendSourceAndDistribute")
 	}
 
-	return response, nil
+	return flatTransaction, nil
 }

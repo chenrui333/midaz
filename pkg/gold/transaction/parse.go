@@ -198,13 +198,17 @@ func (v *TransactionVisitor) VisitShareInt(ctx *parser.ShareIntContext) any {
 
 	return model.Share{
 		Percentage:             percentage,
-		PercentageOfPercentage: 0,
+		PercentageOfPercentage: 100,
 	}
 }
 
 func (v *TransactionVisitor) VisitShareIntOfInt(ctx *parser.ShareIntOfIntContext) any {
 	percentage, _ := strconv.Atoi(v.VisitValueOrVariable(ctx.ValueOrVariable(0).(*parser.ValueOrVariableContext)).(string))
 	percentageOfPercentage, _ := strconv.Atoi(v.VisitValueOrVariable(ctx.ValueOrVariable(1).(*parser.ValueOrVariableContext)).(string))
+
+	if percentageOfPercentage == 0 {
+		percentageOfPercentage = 100
+	}
 
 	return model.Share{
 		Percentage:             percentage,

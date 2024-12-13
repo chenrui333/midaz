@@ -11,13 +11,14 @@ type Balance struct {
 } // @name Balance
 
 type Responses struct {
-	Total        int
-	Asset        string
-	From         map[string]Amount
-	To           map[string]Amount
-	Sources      []string
-	Destinations []string
-	Aliases      []string
+	Total         int
+	Asset         string
+	Rates         map[string]Rate
+	From          map[string]Amount
+	To            map[string]Amount
+	Sources       []string
+	Destinations  []string
+	AliasesAssets map[string]string
 }
 
 // Metadata structure for marshaling/unmarshalling JSON.

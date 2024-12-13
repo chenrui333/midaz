@@ -3,12 +3,15 @@ package in
 import (
 	"context"
 	"encoding/json"
+	"github.com/LerianStudio/midaz/components/transaction/internal/adapters/postgres/assetrate"
 	"github.com/LerianStudio/midaz/pkg/mmodel"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.opentelemetry.io/otel/trace"
 	"os"
 	"reflect"
+	"slices"
 	"strings"
+	"time"
 
 	"github.com/LerianStudio/midaz/components/transaction/internal/adapters/postgres/operation"
 	"github.com/LerianStudio/midaz/components/transaction/internal/adapters/postgres/transaction"
@@ -387,24 +390,18 @@ func (handler *TransactionHandler) createTransaction(c *fiber.Ctx, logger mlog.L
 	organizationID := c.Locals("organization_id").(uuid.UUID)
 	ledgerID := c.Locals("ledger_id").(uuid.UUID)
 
-	_, spanValidateDSL := tracer.Start(ctx, "handler.create_transaction_validate_dsl")
+	_, spanGetAccountsDSL := tracer.Start(ctx, "handler.create_transaction_get_accounts")
 
-	validate, err := goldModel.ValidateSendSourceAndDistribute(parserDSL)
-	if err != nil {
-		mopentelemetry.HandleSpanError(&spanValidateDSL, "Failed to validate send source and distribute", err)
+	flatTransaction := goldModel.GetListAccounts(parserDSL)
 
-		logger.Error("Validation failed:", err.Error())
-
-		return http.WithError(c, err)
-	}
-
-	spanValidateDSL.End()
+	spanGetAccountsDSL.End()
 
 	token := http.GetTokenHeader(c)
 
 	ctxGetAccounts, spanGetAccounts := tracer.Start(ctx, "handler.create_transaction.get_accounts")
 
-	accounts, err := handler.getAccounts(ctxGetAccounts, logger, token, organizationID, ledgerID, validate.Aliases)
+	aliases := append(flatTransaction.Sources, flatTransaction.Destinations...)
+	listAccounts, err := handler.getAccounts(ctxGetAccounts, logger, token, organizationID, ledgerID, aliases)
 	if err != nil {
 		mopentelemetry.HandleSpanError(&spanGetAccounts, "Failed to get accounts", err)
 
@@ -415,14 +412,79 @@ func (handler *TransactionHandler) createTransaction(c *fiber.Ctx, logger mlog.L
 
 	_, spanValidateAccounts := tracer.Start(ctx, "handler.create_transaction.validate_accounts")
 
-	err = goldModel.ValidateAccounts(*validate, accounts)
+	aliasesWithAssets, err := goldModel.ValidateAccounts(parserDSL, listAccounts)
 	if err != nil {
 		mopentelemetry.HandleSpanError(&spanValidateAccounts, "Failed to validate accounts", err)
 
 		return http.WithError(c, err)
 	}
+	flatTransaction.AliasesAssets = aliasesWithAssets
 
 	spanValidateAccounts.End()
+
+	txGetAssets, spanGetAssets := tracer.Start(ctx, "handler.create_transaction.get_rates")
+
+	if parserDSL.Distribute.Rate == nil {
+		var assetRates []*assetrate.AssetRate
+
+		var toAssetCodes []string
+		for key := range aliasesWithAssets {
+			if parserDSL.Send.Asset != aliasesWithAssets[key] && !slices.Contains(toAssetCodes, aliasesWithAssets[key]) {
+				toAssetCodes = append(toAssetCodes, aliasesWithAssets[key])
+			}
+		}
+
+		maxDateRangeMonths := pkg.SafeInt64ToInt(pkg.GetenvIntOrDefault("MAX_PAGINATION_MONTH_DATE_RANGE", 1))
+		defaultStartDate := time.Now().AddDate(0, -maxDateRangeMonths, 0)
+		defaultEndDate := time.Now()
+
+		filter := http.QueryHeader{
+			Metadata:     &bson.M{},
+			Page:         0,
+			Limit:        100,
+			SortOrder:    "DESC",
+			StartDate:    defaultStartDate,
+			EndDate:      defaultEndDate,
+			ToAssetCodes: toAssetCodes,
+		}
+
+		assetRates, _, err = handler.Query.GetAllAssetRatesByAssetCode(txGetAssets, organizationID, ledgerID, parserDSL.Send.Asset, filter)
+		if err != nil {
+			mopentelemetry.HandleSpanError(&spanGetAssets, "Failed to get rates", err)
+
+			logger.Error("get asset rate failed:", err.Error())
+
+			return http.WithError(c, err)
+		}
+
+		for i := range assetRates {
+			if parserDSL.Send.Asset != assetRates[i].To {
+				flatTransaction.Rates[assetRates[i].To] = goldModel.Rate{
+					From:  parserDSL.Send.Asset,
+					To:    assetRates[i].To,
+					Value: int(assetRates[i].Rate),
+					Scale: int(*assetRates[i].Scale),
+				}
+			}
+		}
+	} else {
+		flatTransaction.Rates[parserDSL.Distribute.Rate.To] = *parserDSL.Distribute.Rate
+	}
+
+	spanGetAssets.End()
+
+	_, spanValidateDSL := tracer.Start(ctx, "handler.create_transaction_validate_dsl")
+
+	validate, err := goldModel.ValidateSendSourceAndDistribute(parserDSL, flatTransaction)
+	if err != nil {
+		mopentelemetry.HandleSpanError(&spanValidateDSL, "Failed to validate send source and distribute", err)
+
+		logger.Error("Validation failed:", err.Error())
+
+		return http.WithError(c, err)
+	}
+
+	spanValidateDSL.End()
 
 	ctxCreateTransaction, spanCreateTransaction := tracer.Start(ctx, "handler.create_transaction.create_transaction")
 
@@ -455,7 +517,7 @@ func (handler *TransactionHandler) createTransaction(c *fiber.Ctx, logger mlog.L
 
 	ctxCreateOperation, spanCreateOperation := tracer.Start(ctx, "handler.create_transaction.create_operation")
 
-	go handler.Command.CreateOperation(ctxCreateOperation, accounts, tran.ID, &parserDSL, *validate, result, e)
+	go handler.Command.CreateOperation(ctxCreateOperation, listAccounts, tran.ID, &parserDSL, *validate, result, e)
 	select {
 	case ops := <-result:
 		operations = append(operations, ops...)
@@ -471,12 +533,12 @@ func (handler *TransactionHandler) createTransaction(c *fiber.Ctx, logger mlog.L
 
 	ctxProcessAccounts, spanProcessAccounts := tracer.Start(ctx, "handler.create_transaction.process_accounts")
 
-	err = mopentelemetry.SetSpanAttributesFromStruct(&spanProcessAccounts, "payload_handler_process_accounts", accounts)
+	err = mopentelemetry.SetSpanAttributesFromStruct(&spanProcessAccounts, "payload_handler_process_accounts", listAccounts)
 	if err != nil {
 		mopentelemetry.HandleSpanError(&spanProcessAccounts, "Failed to convert accounts from struct to JSON string", err)
 	}
 
-	err = handler.processAccounts(ctxProcessAccounts, logger, *validate, token, organizationID, ledgerID, accounts)
+	err = handler.processAccounts(ctxProcessAccounts, logger, *validate, token, organizationID, ledgerID, listAccounts)
 	if err != nil {
 		mopentelemetry.HandleSpanError(&spanProcessAccounts, "Failed to process accounts", err)
 
