@@ -253,7 +253,7 @@ func (r *AssetRatePostgreSQLRepository) FindAllByAssetCodes(ctx context.Context,
 		PlaceholderFormat(squirrel.Dollar)
 
 	if toAssetCodes != nil {
-		findAll.Where(squirrel.Eq{`"to"`: toAssetCodes})
+		findAll = findAll.Where(squirrel.Eq{`"to"`: toAssetCodes})
 	}
 
 	findAll, orderDirection = http.ApplyCursorPagination(findAll, decodedCursor, orderDirection, filter.Limit)
